@@ -1,0 +1,728 @@
+tab prv | Privacy | shield
+
+sub telemetry | Telemetry
+
+tweak prv.telemetry | query_stats | rec
+  name  Diagnostic data off
+  desc  Sets diagnostic data to the lowest level (Security), turns off experiments, the commercial data pipeline, device name upload, Windows Insider builds, OneSettings downloads and the event transcript, and hides the opt-in prompts.
+  R     PW\DataCollection | AllowTelemetry | d:0 | -
+  R     CV\Policies\DataCollection | AllowTelemetry | d:0 | -
+  R     CV\Policies\DataCollection | MaxTelemetryAllowed | d:0 | -
+  R     UPW\DataCollection | AllowTelemetry | d:0 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection | AllowTelemetry | d:0 | -
+  R     M\PolicyManager\default\System\AllowTelemetry | value | d:0 | -
+  R     CV\CPSS\DevicePolicy\AllowTelemetry | DefaultValue | d:0 | -
+  R     CV\CPSS\Store\AllowTelemetry | Value | d:0 | -
+  R     M\PolicyManager\current\device\System | AllowExperimentation | d:0 | -
+  R     PW\DataCollection | AllowCommercialDataPipeline | d:0 | -
+  R     PW\DataCollection | AllowDeviceNameInTelemetry | d:0 | -
+  R     PW\DataCollection | DisableEnterpriseAuthProxy | d:1 | -
+  R     PW\DataCollection | MicrosoftEdgeDataOptIn | d:0 | -
+  R     PW\DataCollection | DisableTelemetryOptInChangeNotification | d:1 | -
+  R     PW\DataCollection | DisableTelemetryOptInSettingsUx | d:1 | -
+  R     PW\DataCollection | LimitEnhancedDiagnosticDataWindowsAnalytics | d:0 | -
+  R     PW\DataCollection | LimitDiagnosticLogCollection | d:1 | -
+  R     PW\DataCollection | LimitDumpCollection | d:1 | -
+  R     PW\DataCollection | AllowBuildPreview | d:0 | -
+  R     PW\DataCollection | AllowDesktopAnalyticsProcessing | d:0 | -
+  R     PW\DataCollection | AllowWUfBCloudProcessing | d:0 | -
+  R     PW\DataCollection | AllowUpdateComplianceProcessing | d:0 | -
+  R     PW\DataCollection | DisableOneSettingsDownloads | d:1 | -
+  R     PW\DataCollection | DisableDiagnosticDataViewer | d:1 | -
+  R     CV\Diagnostics\DiagTrack\EventTranscriptKey | EnableEventTranscript | d:0 | -
+  R     CV\Diagnostics\DiagTrack | DiagTrackAllowed | d:0 | -
+  R     CV\Diagnostics\DiagTrack\EventTranscriptKey | MiniTraceSlotEnabled | d:0 | -
+  R     CC\WMI\Autologger\Diagtrack-Listener | Start | d:0 | d:1
+  R     CC\WMI\Autologger\AutoLogger-Diagtrack-Listener | Start | d:0 | d:1
+  R     CV\WINEVT\Channels\Microsoft-Windows-UniversalTelemetryClient/Operational | Enabled | d:0 | d:1
+  R     CV\WINEVT\Channels\Microsoft-Windows-UnifiedTelemetryClient/Operational | Enabled | d:0 | d:1
+  R     CV\WINEVT\Channels\Microsoft-Windows-Application-Experience/Program-Telemetry | Enabled | d:0 | d:1
+
+tweak prv.feedback | feedback | rec
+  name  Feedback requests off
+  desc  Stops Windows from asking how you like it and hides feedback notifications.
+  R     PW\DataCollection | DoNotShowFeedbackNotifications | d:1 | -
+  R     CV\Policies\DataCollection | DoNotShowFeedbackNotifications | d:1 | -
+  R     UM\Siuf\Rules | NumberOfSIUFInPeriod | d:0 | -
+  R     UM\Siuf\Rules | NoSIUFInPeriod | d:1 | -
+  R     UM\Siuf\Rules | NoPromptAgain | d:1 | -
+  R     UM\Siuf\Rules | PeriodInNanoSeconds | d:0 | -
+  R     HKCU\Software\Policies\Microsoft\Assistance\Client\1.0 | NoExplicitFeedback | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\Assistance\Client\1.0 | NoImplicitFeedback | d:1 | -
+  R     UCV\Diagnostics\DiagTrack | ShowedToastAtLevel | d:1 | -
+
+tweak prv.wer | bug_report | rec
+  name  Windows Error Reporting off
+  desc  Turns off crash reporting to Microsoft: no uploads, no archive, no consent prompts and no extra data. Crash dumps for your own use stay available.
+  R     PW\Windows Error Reporting | Disabled | d:1 | -
+  R     PW\Windows Error Reporting | AutoApproveOSDumps | d:0 | -
+  R     PW\Windows Error Reporting | LoggingDisabled | d:1 | -
+  R     PW\Windows Error Reporting | DontSendAdditionalData | d:1 | -
+  R     PW\Windows Error Reporting | DontShowUI | d:1 | -
+  R     PW\Windows Error Reporting | DisableArchive | d:1 | -
+  R     PW\Windows Error Reporting | DisableWerUpload | d:1 | -
+  R     PW\Windows Error Reporting\Consent | 0 | s: | -
+  R     M\Windows\Windows Error Reporting | Disabled | d:1 | -
+  R     M\Windows\Windows Error Reporting | DontSendAdditionalData | d:1 | -
+  R     M\Windows\Windows Error Reporting | LoggingDisabled | d:1 | -
+  R     M\Windows\Windows Error Reporting\Consent | DefaultConsent | d:0 | -
+  R     M\Windows\Windows Error Reporting\Consent | DefaultOverrideBehavior | d:1 | -
+  R     UPW\Windows Error Reporting | Disabled | d:1 | -
+  R     CV\Component Based Servicing | DisableWerReporting | d:1 | -
+  R     CC\Session Manager\Kernel | EnableWerUserReporting | d:0 | -
+  R     PW\DeviceInstall\Settings | DisableSendGenericDriverNotFoundToWER | d:1 | -
+  R     PW\DeviceInstall\Settings | DisableSendRequestAdditionalSoftwareToWER | d:1 | -
+
+tweak prv.adid | ad_off | rec
+  name  Advertising ID off
+  desc  Turns off the advertising ID that apps use to show you personalised ads across apps.
+  R     PW\AdvertisingInfo | DisabledByGroupPolicy | d:1 | -
+  R     CV\AdvertisingInfo | Enabled | d:0 | -
+
+tweak prv.weblang | translate | rec
+  name  Language list for websites off
+  desc  Stops Windows from sending your installed language list to websites, which they can use to fingerprint you.
+  R     HKCU\Control Panel\International\User Profile | HttpAcceptLanguageOptOut | d:1 | -
+  R     UCV\AdvertisingInfo | Enabled | d:0 | -
+
+tweak prv.autologgers | receipt_long | rec
+  name  Diagnostic autologgers off
+  desc  Stops the boot-time trace sessions that feed telemetry and diagnostics (SQM, setup telemetry, Wi-Fi session, NetCore, NTFS, ReFS, spooler, UBPM and others).
+  R     CC\WMI\Autologger\SQMLogger | Start | d:0 | d:1
+  R     CC\WMI\Autologger\SetupPlatformTel | Start | d:0 | d:1
+  R     CC\WMI\Autologger\StartupEventCollector | Start | d:0 | d:1
+  R     CC\WMI\Autologger\WiFiSession | Start | d:0 | d:1
+  R     CC\WMI\Autologger\CimFSUnionFS-Filter | Start | d:0 | d:1
+  R     CC\WMI\Autologger\DiagLog | Start | d:0 | d:1
+  R     CC\WMI\Autologger\Microsoft-Windows-RDP-Graphics-RdpIdd-Trace | Start | d:0 | d:1
+  R     CC\WMI\Autologger\RadioMgr | Start | d:0 | d:1
+  R     CC\WMI\Autologger\ReFSLog | Start | d:0 | d:1
+  R     CC\WMI\Autologger\ReFSLogR | Start | d:0 | d:1
+  R     CC\WMI\Autologger\SpoolerLogger | Start | d:0 | d:1
+  R     CC\WMI\Autologger\UBPM | Start | d:0 | d:1
+  R     CC\WMI\Autologger\Circular Kernel Context Logger | Start | d:0 | d:1
+  R     CC\WMI\Autologger\LwtNetLog | Start | d:0 | d:1
+  R     CC\WMI\Autologger\NetCore | Start | d:0 | d:1
+  R     CC\WMI\Autologger\FilterMgr-Logger | Start | d:0 | d:1
+  R     CC\WMI\Autologger\NtfsLog | Start | d:0 | d:1
+  R     CC\WMI\Autologger\WdiContextLog | Start | d:0 | d:1
+  R     CC\WMI\Autologger\CloudExperienceHostOOBE | Start | d:0 | d:1
+  R-    CC\Ubpm | CriticalMaintenance_UsageDataReporting
+
+tweak prv.logging | monitor_heart | rec
+  name  Diagnostic logs off
+  desc  Turns off the WDI global logger, Sleep Study, driver framework logs and the DCOM, WLAN, Bluetooth, NLA and Group Policy diagnostic event channels.
+  R     CC\WDI | GlobalLoggerDisable | d:1 | -
+  R     CC\Lsa\Audit | EtwDirect | d:0 | -
+  R     CC\Session Manager\Power | SleepStudyDisabled | d:1 | -
+  R     CC\Wdf | WdfGlobalLogsDisabled | d:1 | -
+  R     CC\Wdf | WdfGlobalSleepStudyDisabled | d:1 | -
+  R     CV\WINEVT\Channels\Microsoft-Windows-Superfetch/Main | Enabled | d:0 | -
+  R     CV\WINEVT\Channels\Microsoft-Windows-Superfetch/PfApLog | Enabled | d:0 | -
+  R     CV\WINEVT\Channels\Microsoft-Windows-Superfetch/StoreLog | Enabled | d:0 | -
+  C     wevtutil sl Microsoft-Windows-DistributedCOM/Diagnostic /e:false
+  C     wevtutil sl Microsoft-Windows-WLAN-AutoConfig/Diagnostic /e:false
+  C     wevtutil sl Microsoft-Windows-Bluetooth-BthLECompat/Diagnostic /e:false
+  C     wevtutil sl Microsoft-Windows-NlaSvc/Diagnostic /e:false
+  C     wevtutil sl Microsoft-Windows-GroupPolicy/Diagnostic /e:false
+  off:
+  C     wevtutil sl Microsoft-Windows-DistributedCOM/Diagnostic /e:true
+  C     wevtutil sl Microsoft-Windows-WLAN-AutoConfig/Diagnostic /e:true
+  C     wevtutil sl Microsoft-Windows-Bluetooth-BthLECompat/Diagnostic /e:true
+  C     wevtutil sl Microsoft-Windows-NlaSvc/Diagnostic /e:true
+  C     wevtutil sl Microsoft-Windows-GroupPolicy/Diagnostic /e:true
+
+tweak prv.diag | troubleshoot | rec
+  name  Scheduled diagnostics off
+  desc  Stops Windows from running troubleshooters on a schedule and from downloading new troubleshooting packs from Microsoft.
+  R     PW\ScheduledDiagnostics | EnabledExecution | d:0 | -
+  R     PW\ScriptedDiagnostics | EnableDiagnostics | d:0 | -
+  R     PW\ScriptedDiagnosticsProvider\Policy | EnableQueryRemoteServer | d:0 | -
+  R     PW\WDI\{9c5a40da-b965-4fc3-8781-88dd50a6299d} | ScenarioExecutionEnabled | d:0 | -
+
+tweak prv.ceip | volunteer_activism | rec
+  name  Customer Experience Program off
+  desc  Opts out of the Windows, App-V, Internet Explorer and Messenger Customer Experience Improvement Programs, SQM uploads, legacy error reporting and the activation ticket upload.
+  R     PM\SQMClient\Windows | CEIPEnable | d:0 | -
+  R     M\SQMClient\Windows | CEIPEnable | d:0 | -
+  R     M\SQMClient | UploadDisableFlag | d:1 | -
+  R     NT\UnattendSettings\SQMClient | CEIPEnabled | d:0 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\AppV\CEIP | CEIPEnable | d:0 | -
+  R     PM\Internet Explorer\SQM | DisableCustomerImprovementProgram | d:1 | -
+  R     PM\Messenger\Client | CEIP | d:2 | -
+  R     PM\PCHealth\ErrorReporting | DoReport | d:0 | -
+  R     CV\Policies\System\UIPI | EnableMessageSQM | d:0 | -
+  R     PM\Windows NT\CurrentVersion\Software Protection Platform | NoGenTicket | d:1 | -
+
+tweak prv.mrt | gpp_good | rec
+  name  Malicious Software Removal Tool off
+  desc  Stops Windows Update from installing the monthly MSRT and from reporting infection data to Microsoft.
+  R     PM\MRT | DontOfferThroughWUAU | d:1 | -
+  R     PM\MRT | DontReportInfectionInformation | d:1 | -
+  R     M\RemovalTools\MpGears | HeartbeatTrackingIndex | d:0 | -
+  R     M\RemovalTools\MpGears | SpyNetReportingLocation | m: | -
+
+tweak prv.office | description | rec
+  name  Office telemetry off
+  desc  Stops Microsoft Office 2016 and later from sending customer data, quality metrics and client telemetry, and turns off Office connected experiences (online pictures, translation, co-authoring presence).
+  R     PM\Office\16.0\common\Privacy | DisconnectedState | d:1 | -
+  R     PM\Office\16.0\common\Privacy | UserSignedIn | d:0 | -
+  R     PM\Office\16.0\common\Privacy | SendTelemetry | d:0 | -
+  R     PM\office\16.0\common | sendcustomerdata | d:0 | -
+  R     PM\office\16.0\common | qmenable | d:0 | -
+  R     PM\office\common\clienttelemetry | sendtelemetry | d:3 | -
+  R     M\ClickToRun\OverRide | DisableLogManagement | d:1 | -
+  R     M\Office\ClickToRun\Configuration | TimerInterval | s:900000 | -
+  R     HKCU\Software\Policies\Microsoft\office\16.0\common | sendcustomerdata | d:0 | -
+  R     HKCU\Software\Policies\Microsoft\office\16.0\common | qmenable | d:0 | -
+  R     HKCU\Software\Policies\Microsoft\office\common\clienttelemetry | sendtelemetry | d:3 | -
+  T     disable \Microsoft\Office\
+
+tweak prv.suggest | lightbulb | rec
+  name  Suggestions & consumer content off
+  desc  Turns off Windows tips, Spotlight features, "suggested" apps that install themselves, tailored experiences, third-party suggestions, share-sheet app promotions and account nags.
+  R     PW\CloudContent | DisableWindowsConsumerFeatures | d:1 | -
+  R     PW\CloudContent | DisableSoftLanding | d:1 | -
+  R     PW\CloudContent | DisableTailoredExperiencesWithDiagnosticData | d:1 | -
+  R     PW\CloudContent | DisableCloudOptimizedContent | d:1 | -
+  R     PW\CloudContent | DisableWindowsSpotlightFeatures | d:1 | -
+  R     PW\CloudContent | DisableConsumerContent | d:1 | -
+  R     PW\CloudContent | DisableConsumerAccountStateContent | d:1 | -
+  R     PW\CloudContent | DisableThirdPartySuggestions | d:1 | -
+  R     PW\ShareSheet | DisableShareAppPromotions | d:1 | -
+  R     PW\EdgeUI | DisableHelpSticker | d:1 | -
+  R     CV\OOBE\AppSettings | Skype-UserConsentAccepted | d:0 | -
+  R     PM\WindowsInkWorkspace | AllowSuggestedAppsInWindowsInkWorkspace | d:0 | -
+  R     M\PolicyManager\default\Settings\AllowOnlineTips | value | d:0 | -
+  R     M\PolicyManager\current\device\Education | IsEducationEnvironment | d:1 | -
+  CDM   SilentInstalledAppsEnabled SystemPaneSuggestionsEnabled PreInstalledAppsEnabled PreInstalledAppsEverEnabled OemPreInstalledAppsEnabled SoftLandingEnabled ContentDeliveryAllowed RotatingLockScreenEnabled RotatingLockScreenOverlayEnabled
+  CDM   SubscribedContentEnabled RemediationRequired SubscribedContent-202914Enabled SubscribedContent-88000326Enabled SubscribedContent-280815Enabled SubscribedContent-310093Enabled SubscribedContent-314559Enabled SubscribedContent-314563Enabled
+  CDM   SubscribedContent-338387Enabled SubscribedContent-338388Enabled SubscribedContent-338389Enabled SubscribedContent-338393Enabled SubscribedContent-353694Enabled SubscribedContent-353696Enabled SubscribedContent-353698Enabled SubscribedContent-370697Enabled SubscribedContent-370700Enabled SubscribedContent-400923Enabled
+  R     UCV\Privacy | TailoredExperiencesWithDiagnosticDataEnabled | d:0 | -
+  R     UCV\UserProfileEngagement | ScoobeSystemSettingEnabled | d:0 | -
+  R     UCV\ContentDeliveryManager\Context\CloudExperienceHostIntent\Wireless | ScoobeCheckCompleted | d:1 | -
+  R     UCV\SystemSettings\AccountNotifications | EnableAccountNotifications | d:0 | -
+  R     UCV\Explorer\Advanced | Start_AccountNotifications | d:0 | -
+  R     UCV\Explorer\Advanced | ShowSyncProviderNotifications | d:0 | -
+  R     UCV\PenWorkspace | PenWorkspaceAppSuggestionsEnabled | d:0 | -
+  R     UM\Notepad | ShowStoreBanner | d:0 | -
+  R     UM\Windows Security Health\State | AccountProtection_MicrosoftAccount_Disconnected | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\Security\EnergySaver | EnergyRecommendations | d:0 | -
+  R     UPW\CloudContent | ConfigureWindowsSpotlight | d:2 | -
+  R     UPW\CloudContent | DisableWindowsSpotlightFeatures | d:1 | -
+  R     UPW\CloudContent | DisableWindowsSpotlightWindowsWelcomeExperience | d:1 | -
+  R     UPW\CloudContent | DisableWindowsSpotlightOnActionCenter | d:1 | -
+  R     UPW\CloudContent | DisableWindowsSpotlightOnSettings | d:1 | -
+  R     UPW\CloudContent | DisableWindowsSpotlightOnLockScreen | d:1 | -
+  R     UPW\CloudContent | DisableSpotlightCollectionOnDesktop | d:1 | -
+  R     UPW\CloudContent | DisableThirdPartySuggestions | d:1 | -
+  R     UPW\CloudContent | DisableTailoredExperiencesWithDiagnosticData | d:1 | -
+  R     UPW\CloudContent | IncludeEnterpriseSpotlight | d:0 | -
+  R     UPW\Explorer | NoBalloonFeatureAdvertisements | d:1 | -
+  R     PW\CloudContent | ConfigureWindowsSpotlight | d:2 | -
+  R     PW\CloudContent | IncludeEnterpriseSpotlight | d:0 | -
+  R     PW\CloudContent | DisableWindowsSpotlightOnActionCenter | d:1 | -
+  R     PW\CloudContent | DisableWindowsSpotlightOnSettings | d:1 | -
+  R     PW\CloudContent | DisableWindowsSpotlightWindowsWelcomeExperience | d:1 | -
+  R     PW\Personalization | LockScreenOverlaysDisabled | d:1 | -
+  CDM   FeatureManagementEnabled SubscribedContent-280810Enabled SubscribedContent-280811Enabled
+  K-    UCV\ContentDeliveryManager\Subscriptions
+  K-    UCV\ContentDeliveryManager\SuggestedApps
+  R     M\WindowsRuntime\ActivatableClassId\ValueBanner.IdealStateFeatureControlProvider | Server | s: | -
+  R     M\WindowsRuntime\ActivatableClassId\ValueBanner.IdealStateFeatureControlProvider | ActivationType | d:4294967295 | -
+  R     M\WindowsRuntime\ActivatableClassId\ValueBanner.IdealStateFeatureControlPolicy | Server | s: | -
+  R     M\WindowsRuntime\ActivatableClassId\ValueBanner.IdealStateFeatureControlPolicy | ActivationType | d:4294967295 | -
+  R     CV\Policies\Explorer | AllowOnlineTips | d:0 | -
+
+tweak prv.helplinks | help_outline | rec
+  name  Online help & links off
+  desc  Stops Help, Event Viewer and Search Companion from fetching headlines, Knowledge Base results and online content, and turns off the registration wizard.
+  R     PM\PCHealth\HelpSvc | Headlines | d:0 | -
+  R     PM\PCHealth\HelpSvc | MicrosoftKBSearch | d:0 | -
+  R     PM\EventViewer | MicrosoftEventVwrDisableLinks | d:1 | -
+  R     PW\Registration Wizard Control | NoRegistration | d:1 | -
+  R     PM\SearchCompanion | DisableContentFileUpdates | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\Assistance\Client\1.0 | NoOnlineAssist | d:1 | -
+  R     UCV\Policies\Explorer | NoSMHelp | d:1 | -
+  R     CV\Policies\Explorer | NoWebServices | d:1 | -
+  R     CV\Policies\Explorer | NoPublishingWizard | d:1 | -
+  R     CV\Policies\Explorer | NoOnlinePrintsWizard | d:1 | -
+  R     PW\Internet Connection Wizard | ExitOnMSICW | d:1 | -
+  R     PM\WindowsMovieMaker | WebHelp | d:1 | -
+  R     PM\WindowsMovieMaker | CodecDownload | d:1 | -
+  R     PM\WindowsMovieMaker | WebPublish | d:1 | -
+
+tweak prv.mediaplayer | music_off | rec
+  name  Media Player data off
+  desc  Stops Windows Media Player from tracking usage and fetching DRM licences and media info online.
+  R     PM\WMDRM | DisableOnline | d:1 | -
+  R     PM\WindowsMediaPlayer | AcceptedPrivacyStatement | d:1 | -
+  R     PM\WindowsMediaPlayer | UsageTracking | d:0 | -
+  R     UM\MediaPlayer\Preferences | AcceptedPrivacyStatement | s:1 | -
+  R     UM\MediaPlayer\Preferences | UsageTracking | s:0 | -
+
+tweak prv.appcompat | apps_outage | rec
+  name  App compatibility telemetry off
+  desc  Turns off the Application Impact Telemetry agent, the program inventory collector, install tracing, API sampling and app footprint reporting.
+  R     PW\AppCompat | AITEnable | d:0 | -
+  R     PW\AppCompat | DisableInventory | d:1 | -
+  R     PW\AppCompat | DisableAPISampling | d:1 | -
+  R     PW\AppCompat | DisableApplicationFootprint | d:1 | -
+  R     PW\AppCompat | DisableInstallTracing | d:1 | -
+  R     PW\AppCompat | DisableWin32AppBackup | d:1 | -
+  R     PW\AppCompat | AllowTelemetry | d:0 | -
+  R     NT\Image File Execution Options\CompatTelRunner.exe | Debugger | s:%SystemRoot%\System32\taskkill.exe | -
+  R     UPW\AppCompat | DisablePCA | d:1 | -
+  R     PW\AppCompat | DisablePCA | d:1 | -
+  R     PW\AppCompat | DisableUAR | d:1 | -
+  R     PW\AppCompat | SbEnable | d:0 | -
+
+tweak prv.ifeoblock | block | rec
+  name  Telemetry & upsell programs off
+  desc  Stops the compatibility telemetry runner, the telemetry aggregator, the feature loader, the Bing Chat installer and the Windows upgrade upsell programs from starting at all.
+  R     NT\Image File Execution Options\AggregatorHost.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+  R     NT\Image File Execution Options\FeatureLoader.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+  R     NT\Image File Execution Options\BingChatInstaller.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+  R     NT\Image File Execution Options\BGAUpsell.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+  R     NT\Image File Execution Options\BCILauncher.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+
+tweak prv.compatengine | build_circle | risk2
+  name  App compatibility engine off
+  desc  Turns off the engine that applies compatibility fixes to old programs. Saves a little startup time per app, but some old games and tools stop working until you turn it back on.
+  R     PW\AppCompat | DisableEngine | d:1 | -
+
+tweak prv.devtel | code_off | rec
+  name  Developer tool telemetry off
+  desc  Opts out of telemetry in the .NET CLI, Docker CLI, Google Cloud SDK, Visual Studio and VS Code, machine-wide.
+  R     CC\Session Manager\Environment | DOTNET_CLI_TELEMETRY_OPTOUT | s:1 | -
+  R     CC\Session Manager\Environment | DOTNET_TRY_CLI_TELEMETRY_OPTOUT | s:1 | -
+  R     CC\Session Manager\Environment | DOCKER_CLI_TELEMETRY_OPTOUT | s:1 | -
+  R     CC\Session Manager\Environment | CLOUDSDK_CORE_DISABLE_PROMPTS | s:1 | -
+  R     CC\Session Manager\Environment | VS_TELEMETRY_OPT_OUT | s:1 | -
+  R     PM\VisualStudio\SQM | OptIn | d:0 | -
+  R     PM\VSCode | TelemetryLevel | s:off | -
+  R     PM\VSCode | EnableFeedback | d:0 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Microsoft\VSCommon\15.0\SQM | OptIn | d:0 | -
+  R     CC\Session Manager\Environment | POWERSHELL_TELEMETRY_OPTOUT | s:1 | -
+
+tweak prv.fwblock | local_fire_department | rec
+  name  Firewall telemetry block
+  desc  Adds outbound firewall rules that block the Connected User Experiences service (DiagTrack) and Windows Error Reporting from reaching the internet.
+  R     SV\SharedAccess\Defaults\FirewallPolicy\FirewallRules | Block-Unified-Telemetry-Client | s:v2.31|Action=Block|Active=TRUE|Dir=Out|RA42=IntErnet|RA62=IntErnet|App=%SystemRoot%\system32\svchost.exe|Svc=DiagTrack|Name=Block-Unified-Telemetry-Client|Desc=Block-Unified-Telemetry-Client|EmbedCtxt=DiagTrack| | -
+  R     SV\SharedAccess\Defaults\FirewallPolicy\FirewallRules | Block-Windows-Error-Reporting | s:v2.31|Action=Block|Active=TRUE|Dir=Out|RA42=IntErnet|RA62=IntErnet|App=%SystemRoot%\system32\svchost.exe|Svc=WerSvc|Name=Block-Windows-Error-Reporting|Desc=Block-Windows-Error-Reporting|EmbedCtxt=WerSvc| | -
+  R     SV\SharedAccess\Parameters\FirewallPolicy\FirewallRules | Block-Unified-Telemetry-Client | s:v2.31|Action=Block|Active=TRUE|Dir=Out|RA42=IntErnet|RA62=IntErnet|App=%SystemRoot%\system32\svchost.exe|Svc=DiagTrack|Name=Block-Unified-Telemetry-Client|Desc=Block-Unified-Telemetry-Client|EmbedCtxt=DiagTrack| | -
+  R     SV\SharedAccess\Parameters\FirewallPolicy\FirewallRules | Block-Windows-Error-Reporting | s:v2.31|Action=Block|Active=TRUE|Dir=Out|RA42=IntErnet|RA62=IntErnet|App=%SystemRoot%\system32\svchost.exe|Svc=WerSvc|Name=Block-Windows-Error-Reporting|Desc=Block-Windows-Error-Reporting|EmbedCtxt=WerSvc| | -
+
+tweak prv.census | inventory | rec
+  name  Device Census off
+  desc  Blocks DeviceCensus.exe, which inventories your hardware and apps and reports them to Microsoft.
+  R     NT\Image File Execution Options\DeviceCensus.exe | Debugger | s:%windir%\System32\taskkill.exe | -
+  R     UCV\Policies\Explorer | DisallowRun | d:1 | -
+  R     UCV\Policies\Explorer\DisallowRun | 1 | s:DeviceCensus.exe | -
+
+sub tasks | Background tasks
+
+tweak prv.tasktel | event_busy | rec
+  name  Telemetry tasks off
+  desc  Disables the scheduled tasks that collect and upload telemetry: Compatibility Appraiser, CEIP, feedback, flighting, SQM, sustainability and usage insights, error queue reporting, device information, and the diagnostic data collectors.
+  T     disable \Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser
+  T     disable \Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser Exp
+  T     disable \Microsoft\Windows\Application Experience\ProgramDataUpdater
+  T     disable \Microsoft\Windows\Application Experience\AitAgent
+  T     disable \Microsoft\Windows\Application Experience\PcaPatchDbTask
+  T     disable \Microsoft\Windows\Application Experience\MareBackup
+  T     disable \Microsoft\Windows\ApplicationExperience\StartupAppTask
+  T     disable \Microsoft\Windows\Customer Experience Improvement Program\
+  T     disable \Microsoft\Windows\Feedback\Siuf\DmClient
+  T     disable \Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload
+  T     disable \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+  T     disable \Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing
+  T     disable \Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting
+  T     disable \Microsoft\Windows\PI\Sqm-Tasks
+  T     disable \Microsoft\Windows\Sustainability\SustainabilityTelemetry
+  T     disable \Microsoft\Windows\Sustainability\PowerGridForecastTask
+  T     disable \Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask
+  T     disable \Microsoft\Windows\Windows Error Reporting\QueueReporting
+  T     disable \Microsoft\Windows\Device Information\Device
+  T     disable \Microsoft\Windows\Device Information\Device User
+  T     disable \Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector
+  T     disable \Microsoft\Windows\NetTrace\GatherNetworkInfo
+  T     disable \Microsoft\Windows\PerformanceTrace\RequestTrace
+  T     disable \Microsoft\Windows\PerformanceTrace\WhesvcToast
+  T     disable \Microsoft\Windows\Diagnosis\UnexpectedCodepath
+  T     disable \Microsoft\Windows\Hotpatch\Monitoring
+
+tweak prv.tasksync | cloud_off | rec
+  name  Sync & cloud tasks off
+  desc  Disables tasks that sync input, theme and language settings, back up your app list to the cloud, join work accounts, download speech and language models, refresh maps and device metadata, and show account and location prompts.
+  T     disable \Microsoft\Windows\Input\syncpensettings
+  T     disable \Microsoft\Windows\Input\LocalUserSyncDataAvailable
+  T     disable \Microsoft\Windows\Input\MouseSyncDataAvailable
+  T     disable \Microsoft\Windows\Input\PenSyncDataAvailable
+  T     disable \Microsoft\Windows\Input\TouchPadSyncDataAvailable
+  T     disable \Microsoft\Windows\SettingSync\NetworkStateChangeTask
+  T     disable \Microsoft\Windows\SettingSync\BackgroundUploadTask
+  T     disable \Microsoft\Windows\Shell\ThemesSyncedImageDownload
+  T     disable \Microsoft\Windows\International\Synchronize Language Settings
+  T     disable \Microsoft\Windows\CloudRestore\Backup
+  T     disable \Microsoft\Windows\CloudRestore\Restore
+  T     disable \Microsoft\Windows\AppListBackup\Backup
+  T     disable \Microsoft\Windows\CrossDevice\CleanupResumeTimelineData
+  T     disable \Microsoft\Windows\DeviceDirectoryClient\HandleCommandVerb
+  T     disable \Microsoft\Windows\Workplace Join\Automatic-Device-Join
+  T     disable \Microsoft\Windows\CloudExperienceHost\CreateObjectTask
+  T     disable \Microsoft\Windows\AccountHealth\RecoverabilityToastTask
+  T     disable \Microsoft\Windows\Security\Pwdless\IntelligentPwdlessTask
+  T     disable \Microsoft\Windows\Speech\SpeechModelDownloadTask
+  T     disable \Microsoft\Windows\Speech\SpeechModelTask
+  T     disable \Microsoft\Windows\LanguageComponentsInstaller\Installation
+  T     disable \Microsoft\Windows\LanguageComponentsInstaller\Uninstallation
+  T     disable \Microsoft\Windows\Maps\MapsToastTask
+  T     disable \Microsoft\Windows\Maps\MapsUpdateTask
+  T     disable \Microsoft\Windows\Location\Notifications
+  T     disable \Microsoft\Windows\Location\WindowsActionDialog
+  T     disable \Microsoft\Windows\Shell\FamilySafetyMonitor
+  T     disable \Microsoft\Windows\Shell\FamilySafetyRefreshTask
+  T     disable \Microsoft\Windows\ApplicationData\appuriverifierdaily
+  T     disable \Microsoft\Windows\ApplicationData\appuriverifierinstall
+  T     disable \Microsoft\Windows\Device Setup\Metadata Refresh
+  T     disable \Microsoft\Windows\Offline Files\Background Synchronization
+  T     disable \Microsoft\Windows\Offline Files\Logon Synchronization
+  T     disable \Microsoft\Windows\Work Folders\Work Folders Maintenance
+  T     disable \Microsoft\Windows\Windows Media Sharing\UpdateLibrary
+  T     disable \Microsoft\Windows\RetailDemo\CleanupOfflineContent
+
+sub perms | App permissions
+
+tweak prv.appperm | app_blocking | rec
+  name  App access to your data off
+  desc  Denies Store apps access to your account, contacts, calendar, email, messages, call history, phone, tasks, notifications, location, motion and diagnostics. You can still allow single apps in Settings.
+  R     PW\AppPrivacy | LetAppsAccessAccountInfo | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessCalendar | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessCallHistory | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessContacts | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessEmail | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessGazeInput | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessMessaging | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessLocation | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessMotion | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessNotifications | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessPhone | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessTasks | d:2 | -
+  R     PW\AppPrivacy | LetAppsGetDiagnosticInfo | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessUserAccountInformation | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessUserDataTasks | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessUserNotificationListener | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessAppDiagnostics | d:2 | -
+
+tweak prv.appsensors | sensors_off | rec
+  name  App access to sensors & radios off
+  desc  Denies Store apps access to Bluetooth, radios, cellular data, eye trackers, presence sensors, spatial perception, voice activation, screen capture and AI text and image generation.
+  R     PW\AppPrivacy | LetAppsAccessActivity | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessBackgroundSpatialPerception | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessSpatialPerception | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessBluetooth | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessBluetoothSync | d:2 | -
+  R     PW\AppPrivacy | LetAppsSyncWithDevices | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessCellularData | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessEyeTracker | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessHumanInterfaceDevice | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessHumanPresence | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessRadios | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessTrustedDevices | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessVoiceActivation | d:2 | -
+  R     PW\AppPrivacy | LetAppsActivateWithVoice | d:2 | -
+  R     PW\AppPrivacy | LetAppsActivateWithVoiceAboveLock | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessGraphicsCaptureProgrammatic | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessGraphicsCaptureWithoutBorder | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessTextAndImageGeneration | d:2 | -
+
+tweak prv.consent | privacy_tip | rec
+  name  Privacy switches in Settings off
+  desc  Sets every privacy switch in Settings > Privacy to off for all users, except camera and microphone, which stay allowed. Bluetooth, Wi-Fi and radio switches are left alone.
+  CONSENT deny | allow=webcam,microphone | skip=radios,bluetoothSync,bluetooth,wifiData,cellularData,wifiDirect,nearShareLegacy,otherDevices
+
+tweak prv.bgapps | block
+  name  Background apps off
+  desc  Stops Store apps from running in the background when you are not using them.
+  R     PW\AppPrivacy | LetAppsRunInBackground | d:2 | -
+  R     UCV\BackgroundAccessApplications | GlobalUserDisabled | d:1 | -
+
+sub location | Location
+
+tweak prv.location | location_off | rec
+  name  Location & sensors off
+  desc  Turns off the location service, the Windows location provider, location scripting and sensors, and stops search from using your location.
+  R     PW\LocationAndSensors | DisableLocation | d:1 | -
+  R     PW\LocationAndSensors | DisableWindowsLocationProvider | d:1 | -
+  R     PW\LocationAndSensors | DisableLocationScripting | d:1 | -
+  R     PW\LocationAndSensors | DisableSensors | d:1 | -
+  R     M\PolicyManager\current\device\System | AllowLocation | d:0 | -
+  R     PW\Windows Search | AllowSearchToUseLocation | d:0 | -
+  R     M\MdmCommon\SettingValues | LocationSyncEnabled | d:0 | -
+  R     CV\CapabilityAccessManager\ConsentStore\location | Value | s:Deny | s:Allow
+  R     SV\lfsvc\Service\Configuration | Status | d:0 | d:1
+  R     NT\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44} | SensorPermissionState | d:0 | d:1
+  K-    SV\lfsvc\TriggerInfo
+  STOP  lfsvc
+
+tweak prv.findmy | where_to_vote | rec
+  name  Find My Device off
+  desc  Turns off Find My Device, which regularly sends this PC's location to your Microsoft account.
+  R     PM\FindMyDevice | AllowFindMyDevice | d:0 | -
+
+sub sync | Sync & devices
+
+tweak prv.settingsync | sync_disabled | rec
+  name  Settings sync off
+  desc  Stops Windows from syncing your theme, passwords, language and other settings to your Microsoft account.
+  R     M\PolicyManager\current\device\Experience | AllowSyncMySettings | d:0 | -
+  R     PW\SettingSync | DisableSettingSync | d:2 | -
+  R     PW\SettingSync | DisableSettingSyncUserOverride | d:1 | -
+  R     PW\SettingSync | DisablePersonalizationSettingSyncUserOverride | d:1 | -
+  R     PW\Messaging | AllowMessageSync | d:0 | -
+  R     PW\SettingSync | DisableSyncOnPaidNetwork | d:1 | -
+  R     PW\SettingSync | DisableWindowsSettingSync | d:2 | -
+  R     PW\SettingSync | SyncPolicy | d:5 | -
+  R     PW\SettingSync | DisableCredentialsSettingSync | d:2 | -
+  R     PW\SettingSync | DisablePersonalizationSettingSync | d:2 | -
+  R     PW\SettingSync | DisableWebBrowserSettingSync | d:2 | -
+  R     PM\UEV\Agent\Configuration | SyncEnabled | d:0 | -
+  R     UCV\SettingSync | SyncPolicy | d:5 | -
+  R     UCV\SettingSync\Groups\Personalization | Enabled | d:0 | -
+  R     UCV\SettingSync\Groups\BrowserSettings | Enabled | d:0 | -
+  R     UCV\SettingSync\Groups\Credentials | Enabled | d:0 | -
+  R     UCV\SettingSync\Groups\Accessibility | Enabled | d:0 | -
+  R     UCV\SettingSync\Groups\Windows | Enabled | d:0 | -
+  R     UCV\SettingSync\Groups\Language | Enabled | d:0 | -
+  R     UCV\CloudStore | DisableRoamingSync | d:1 | -
+  R     PW\UEV\Agent | Enabled | d:0 | -
+
+tweak prv.activity | history | rec
+  name  Activity history off
+  desc  Stops Windows from collecting the apps and files you open and from uploading that timeline to Microsoft.
+  R     PW\System | EnableActivityFeed | d:0 | -
+  R     PW\System | PublishUserActivities | d:0 | -
+  R     UCV\Privacy | EnableActivityFeed | d:0 | -
+  R     UCV\Privacy | PublishUserActivities | d:0 | -
+  R     UCV\Privacy | UploadUserActivities | d:0 | -
+  R     PW\System | UploadUserActivities | d:0 | -
+
+tweak prv.mdm | business | rec
+  name  Device management enrollment off
+  desc  Blocks this PC from being enrolled into a company's device management (MDM) and turns off device health attestation. Do not use on a work PC that needs it.
+  R     PW\CurrentVersion\MDM | DisableRegistration | d:1 | -
+  R     PM\DeviceHealthAttestationService | EnableDeviceHealthAttestationService | d:0 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\DeviceHealthAttestationService | EnableDeviceHealthAttestationService | d:0 | -
+
+tweak prv.lockscreen | no_photography | rec
+  name  Lock screen camera & notifications off
+  desc  Removes the camera shortcut from the lock screen and hides app notifications there, so nobody sees your messages or takes pictures without signing in.
+  R     PW\Personalization | NoLockScreenCamera | d:1 | -
+  R     PW\System | DisableLockScreenAppNotifications | d:1 | -
+
+tweak prv.push | notifications_paused | risk2
+  name  Cloud notifications off
+  desc  Stops apps from receiving push notifications and live tile updates through the Windows notification cloud service.
+  R     PW\CurrentVersion\PushNotifications | NoCloudApplicationNotification | d:1 | -
+
+sub typing | Typing & voice
+
+tweak prv.typing | keyboard_hide | rec
+  name  Typing & inking data off
+  desc  Turns off typing insights, text prediction, autocorrect and spell-check on the touch and hardware keyboards and stops Windows from learning your handwriting and typing.
+  R     M\Input\Settings | DisablePersonalizationGTKM | d:1 | -
+  R     M\Input\Settings | InsightsEnabled | d:0 | -
+  R     M\Input\Settings | EnableHwkbTextPrediction | d:0 | -
+  R     M\Input\Settings | EnableHwkbAutocorrection | d:0 | -
+  R     M\Input\Settings | MultilingualEnabled | d:0 | -
+  R     M\TabletTip\1.7 | EnableAutocorrection | d:0 | -
+  R     M\TabletTip\1.7 | EnableSpellchecking | d:0 | -
+  R     M\TabletTip\1.7 | EnableTextPrediction | d:0 | -
+  R     M\TabletTip\1.7 | EnablePredictionSpaceInsertion | d:0 | -
+  R     M\TabletTip\1.7 | EnableDoubleTapSpace | d:0 | -
+  R     M\Input\TIPC | Enabled | d:0 | -
+  R     CV\Policies\TextInput | AllowLinguisticDataCollection | d:0 | -
+  R     PM\InputPersonalization | AllowInputPersonalization | d:0 | -
+  R     PW\TabletPC | PreventHandwritingDataSharing | d:1 | -
+  R     PW\HandwritingErrorReports | PreventHandwritingErrorReports | d:1 | -
+  R     M\Input\Settings | BluebirdDTWMultiplier | d:0 | -
+  R     M\Input\Settings | DynamicAutocorrectionAllowed | d:0 | -
+  R     M\Input\Settings | DisableExpressiveInputShellHotkey | d:1 | -
+  R     UM\Input\Settings | InsightsEnabled | d:0 | -
+  R     UM\Input\Settings | UserStatsEnabled | d:0 | -
+  R     UM\Input\TIPC | Enabled | d:0 | -
+  R     UM\InputPersonalization\TrainedDataStore | HarvestContacts | d:0 | -
+  R     UM\Personalization\Settings | AcceptedPrivacyPolicy | d:0 | -
+  R     HKCU\Software\Policies\Microsoft\InputPersonalization | RestrictImplicitTextCollection | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\InputPersonalization | RestrictImplicitInkCollection | d:1 | -
+  R     UM\TabletTip\1.7 | EnableAutocorrection | d:0 | -
+  R     UM\TabletTip\1.7 | EnableSpellchecking | d:0 | -
+  R     UM\TabletTip\1.7 | EnableTextPrediction | d:0 | -
+  R     UM\TabletTip\1.7 | EnablePredictionSpaceInsertion | d:0 | -
+  R     UM\TabletTip\1.7 | EnableDoubleTapSpace | d:0 | -
+  R     UM\TabletTip\1.7 | EnableAutoShiftEngage | s:0 | -
+  R     UM\TabletTip\1.7 | EnableKeyAudioFeedback | s:0 | -
+
+tweak prv.voice | mic_off | rec
+  name  Voice & speech off
+  desc  Stops voice activation by default and on the lock screen, and stops Windows from downloading and updating speech recognition models.
+  R     M\Speech_OneCore\Preferences | VoiceActivationEnableAboveLockscreen | d:0 | -
+  R     M\Speech_OneCore\Preferences | VoiceActivationDefaultOn | d:0 | -
+  R     M\Speech_OneCore\Preferences | ModelDownloadAllowed | d:0 | -
+  R     PM\Speech | AllowSpeechModelUpdate | d:0 | -
+  R     UM\Speech_OneCore\Settings\OnlineSpeechPrivacy | HasAccepted | d:0 | -
+  R     UM\Speech_OneCore\Preferences | VoiceActivationOn | d:0 | -
+  R     UM\Speech_OneCore\Preferences | VoiceActivationEnableAboveLockscreen | d:0 | -
+  R     UM\Speech_OneCore\Preferences | ModelDownloadAllowed | d:0 | -
+  R     UM\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps | AgentActivationEnabled | d:0 | -
+  R     UM\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps | AgentActivationOnLockScreenEnabled | d:0 | -
+  R     UCV\Search | VoiceShortcut | d:0 | -
+
+tweak prv.crossdevice | devices | rec
+  name  Cross-device resume off
+  desc  Blocks CrossDeviceResume.exe, which offers to continue apps from your phone on the PC.
+  R     NT\Image File Execution Options\CrossDeviceResume.exe | Debugger | s:%windir%\System32\taskkill.exe | -
+  R     M\PolicyManager\default\Connectivity\DisableCrossDeviceResume | value | d:1 | -
+  R     PW\System | EnableMmx | d:0 | -
+  R     PW\System | EnableCdp | d:0 | -
+  R     UCV\CrossDeviceResume\Configuration | IsResumeAllowed | d:0 | -
+  R     UCV\CDP | CdpSessionUserAuthzPolicy | s:1 | -
+  R     UCV\CDP | NearShareChannelUserAuthzPolicy | s:0 | -
+  R     UCV\CDP | RomeSdkChannelUserAuthzPolicy | d:0 | -
+  R     UCV\CDP | DragTrayEnabled | d:0 | -
+  R     UCV\CDP\SettingsPage | BluetoothLastDisabledNearShare | s:0 | -
+
+tweak prv.cliphist | content_paste
+  name  Clipboard history off
+  desc  Turns off clipboard history (Win+V), so copied text and images are not kept after you paste them.
+  R     PW\System | AllowClipboardHistory | d:0 | -
+
+tweak prv.cloudclip | content_paste_off | rec
+  name  Cloud clipboard off
+  desc  Stops your clipboard history from syncing to other devices through your Microsoft account.
+  R     PW\System | AllowCrossDeviceClipboard | d:0 | -
+  R     UM\Clipboard | CloudClipboardAutomaticUpload | d:0 | -
+  R     UM\Clipboard | CloudClipRDPOverride | d:0 | -
+
+tweak prv.recent | history_toggle_off
+  name  Recent files tracking off
+  desc  Stops Windows from tracking recently opened files and jump lists, hides frequent and recent items in Quick access and clears the list when you sign out.
+  R     PW\Explorer | NoRecentDocsHistory | d:1 | -
+  R     PW\Explorer | HideRecentJumplists | d:1 | -
+  R     PW\Explorer | NoInstrumentation | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer | ClearRecentDocsOnExit | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer | NoResolveSearch | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer | NoResolveTrack | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer | NoRemoteDestinations | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | ShowFrequent | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | ShowRecent | d:0 | -
+  R     UCV\Explorer | ShowFrequent | d:0 | -
+  R     UCV\Explorer | ShowRecent | d:0 | -
+  R     UCV\Explorer | ShowCloudFilesInQuickAccess | d:0 | -
+  R     UCV\Explorer\Advanced | HideRecentJumplists | d:1 | -
+  R     UCV\Explorer\Advanced | Start_TrackDocs | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackProgs | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackEnabled | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackSearchContract | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackConnectedSearchHistory | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackOpenPickerContract | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackSavePickerContract | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackShareContractMFU | d:0 | -
+  R     UCV\Explorer\Advanced | Start_TrackCachedFileUpdaterContract | d:0 | -
+  R     UCV\Policies\Explorer | NoRecentDocsHistory | d:1 | -
+  R     UCV\Policies\Explorer | NoRecentDocsMenu | d:1 | -
+  R     UCV\Policies\Explorer | NoInstrumentation | d:1 | -
+  R     UCV\Policies\Explorer | DisableGraphRecentItems | d:1 | -
+  R     UPW\Explorer | NoRemoteDestinations | d:1 | -
+  R     UPW\EdgeUI | DisableMFUTracking | d:1 | -
+  R     UPW\EdgeUI | DisableRecentApps | d:1 | -
+  R     UPW\EdgeUI | TurnOffBackstack | d:1 | -
+
+tweak prv.smartscreen | gpp_maybe | risk2
+  name  SmartScreen off
+  desc  Turns off SmartScreen checks for downloaded apps, Store apps and attachments and stops smartscreen.exe from starting. Unknown programs will no longer be checked before they run.
+  R     PW\System | EnableSmartScreen | d:0 | -
+  R     PW\System | ShellSmartScreenLevel | s:Warn | -
+  R     CV\Explorer | SmartScreenEnabled | s:Off | s:Warn
+  R     CV\AppHost | EnableWebContentEvaluation | d:0 | -
+  R     CV\AppHost | Enabled | d:0 | -
+  R     CV\AppHost | PreventOverride | d:0 | -
+  R     CV\Policies\Attachments | ScanWithAntiVirus | d:1 | -
+  R     NT\Image File Execution Options\smartscreen.exe | Debugger | s:%SYSTEMROOT%\System32\taskkill.exe | -
+  R     UCV\Policies\Attachments | SaveZoneInformation | d:1 | -
+  R     PW\System | EnableWebContentEvaluation | d:0 | -
+  KILL  smartscreen
+
+tweak prv.biometrics | fingerprint | risk2
+  name  Biometrics off
+  desc  Turns off Windows Hello face and fingerprint sign-in through policy. Use it only if you never sign in with your face or a fingerprint.
+  R     PM\Biometrics | Enabled | d:0 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Biometrics | Enabled | d:0 | -
+
+tweak prv.hostsclean | dns | action
+  name  Clean the hosts file
+  desc  Removes 0.0.0.0 block entries other tools added to the hosts file. Telemetry stays blocked by the policies above, and Defender stops flagging the hosts file. A backup is kept in the cr1mix app data folder.
+  HOSTSCLEAN 0.0.0.0
+
+sub search | Search
+
+tweak prv.websearch | travel_explore | rec
+  name  Web results in search off
+  desc  Keeps Windows Search local: no Bing results, web suggestions, cloud content or search highlights when you type in Start.
+  R     PW\Windows Search | DisableWebSearch | d:1 | -
+  R     PW\Windows Search | ConnectedSearchUseWeb | d:0 | -
+  R     PW\Windows Search | ConnectedSearchUseWebOverMeteredConnections | d:0 | -
+  R     PW\Windows Search | ConnectedSearchPrivacy | d:3 | -
+  R     PW\Windows Search | AllowCloudSearch | d:0 | -
+  R     PW\Windows Search | EnableDynamicContentInWSB | d:0 | -
+  R     PW\Windows Search | PreventRemoteQueries | d:1 | -
+  R     PW\Explorer | DisableSearchBoxSuggestions | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\Windows\Explorer | DisableSearchBoxSuggestions | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Search | BingSearchEnabled | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings | IsDeviceSearchHistoryEnabled | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings | IsMSACloudSearchEnabled | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings | IsAADCloudSearchEnabled | d:0 | -
+  R     UCV\SearchSettings | IsMSFTCloudSearchEnabled | d:0 | -
+  R     UCV\SearchSettings | IsDynamicSearchBoxEnabled | d:0 | -
+  R     UCV\Search | AllowSearchToUseLocation | d:0 | -
+  R     UCV\Search | SearchSuggestionsEnabled | d:0 | -
+  R     UCV\Search | AllowCloudSearch | d:0 | -
+  R     UCV\Search | DeviceHistoryEnabled | d:0 | -
+  R     UCV\Search | HistoryViewEnabled | d:0 | -
+  R     UCV\Search | BackgroundAppGlobalToggle | d:0 | -
+  R     M\WindowsRuntime\ActivatableClassId\WinStore.Tasks.WindowsSearchTask | ActivationType | d:4294967295 | -
+  R     M\WindowsRuntime\ActivatableClassId\WinStore.Tasks.WindowsSearchTask | Server | s: | -
+
+tweak prv.cortana | voice_over_off | rec
+  name  Cortana off
+  desc  Turns off Cortana everywhere: above the lock screen, in work accounts, during setup and in ambient mode.
+  R     PW\Windows Search | AllowCortana | d:0 | -
+  R     M\PolicyManager\default\Experience\AllowCortana | value | d:0 | -
+  R     PW\Windows Search | AllowCortanaAboveLock | d:0 | -
+  R     PW\Windows Search | AllowCortanaInAAD | d:0 | -
+  R     PW\Windows Search | AllowCortanaInAADPathOOBE | d:0 | -
+  R     CV\Search | CortanaInAmbientMode | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Search | CortanaConsent | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | ShowCortanaButton | d:0 | -
+  R     UCV\Search | CanCortanaBeEnabled | d:0 | -
+  R     UCV\Search | CortanaEnabled | d:0 | -
+
+tweak prv.indexscope | manage_search | rec
+  name  Search indexing scope
+  desc  Stops the indexer from indexing Outlook mail, encrypted items and removable drives, pauses it on battery and in power-saving modes, blocks third-party indexer add-ins and turns off automatic language detection.
+  R     M\Windows Search\Gather\Windows\SystemIndex | RespectPowerModes | d:1 | -
+  R     PW\Windows Search | PreventIndexOnBattery | d:1 | -
+  R     PW\Windows Search | PreventIndexingOutlook | d:1 | -
+  R     PW\Windows Search | DisableRemovableDriveIndexing | d:1 | -
+  R     PW\Windows Search | PreventUnwantedAddIns | d:1 | -
+  R     PW\Windows Search | AlwaysUseAutoLangDetection | d:0 | -
+  R     PW\Windows Search | AllowIndexingEncryptedStoresOrItems | d:0 | -
+
+sub security | Security features
+
+tweak prv.phishing | phishing | risk2
+  name  Enhanced phishing protection off
+  desc  Turns off the Defender feature that watches where you type your Windows password and warns about phishing sites.
+  R     M\WTDS\Components | Enabled | d:0 | -
+  R     M\WTDS\FeatureFlags | WTDSFeatureEnabled | d:0 | -

@@ -1,0 +1,542 @@
+tab apps | Apps | apps
+
+sub services | Services & presets
+
+tweak win.svcpreset | dns | rec reboot
+  name  Service preset
+  desc  Turns off Windows services you do not use. Light only stops telemetry and diagnostics. Balanced also stops legacy, remote, sync and mixed-reality services. Extreme also stops remote management, network discovery, backup, smart card, legacy port and per-user sync services, but keeps everything a normal PC relies on (clipboard, notifications, Start, Bluetooth pairing, BitLocker, ISO mounting, file sharing, VPN, screen capture), so it stays stable. Default puts back the Windows start types.
+  opt   default | Windows default
+  RESET
+  opt   light | Light
+  SVCS  2 | Schedule:2 EventLog:2 RpcSs:2 RpcEptMapper:2 DcomLaunch:2 Winmgmt:2 LanmanWorkstation:2 NlaSvc:2 netprofm:3 NcbService:3 RmSvc:3 WlanSvc:2 Wcmsvc:2 Dnscache:2 Dhcp:2 condrv:3
+  SVCS  3 | VSS:3 wmiApSrv:3
+  SVCS  4 | DiagTrack:2 dmwappushservice:3 diagnosticshub.standardcollector.service:3 RetailDemo:3 WdiSystemHost:3 WdiServiceHost:3 troubleshootingsvc:3 diagsvc:3 InventorySvc:3 wisvc:3 PcaSvc:3 DusmSvc:2 WSAIFabricSvc:2 svsvc:3 wercplsupport:3 WerSvc:3
+  opt   balanced | Balanced
+  USE   light
+  SVCS  4 | SysMain:2 AJRouter:3 CertPropSvc:3 Browser:3 TrkWks:2 EntAppSvc:3 lfsvc:3 Mcx2Svc:4 CscService:3 WpcMonSvc:3 PNRPsvc:3 RemoteRegistry:4 RemoteAccess:4 TapiSrv:3 WMPNetworkSvc:3 MessagingService:3 shpamsvc:4
+  SVCS  4 | UCPD dam GpuEnergyDrv NetBT tcpipreg:2 MSDTC:3 SmsRouter:3 UserDataSvc:3 UnistoreSvc:3 PimIndexMaintenanceSvc:3 perceptionsimulation:3 SpatialGraphFilter:3 SharedRealitySvc:3 MixedRealityOpenXRSvc:3
+  SVCS  4 | Wecsvc:3 SEMgrSvc:3 Fax:3 autotimesvc:3 DialogBlockingService:4 tzautoupdate:3 MsKeyboardFilter:4 NetTcpPortSharing:4 MSiSCSI:3 SCPolicySvc:3 IpxlatCfgSvc:3 AxInstSV:3 AppVClient:4 DcpSvc:3
+  SVCS  4 | p2psvc:3 p2pimsvc:3 AppIDSvc:3 KtmRm:3 PeerDistSvc:3 RasAcd:3 RasAuto:3 AssignedAccessManagerSvc:3 UmRdpService:3 WarpJITSvc:3 NvTelemetryContainer:2 DSAService:2 SSDPSRV:3
+  SVCS  4 | DsSvc:3 DPS:2 Ndu:2 midisrv:3 Beep:1 gupdatem:3 MozillaMaintenance:3 AdobeARMservice:2
+  SVCS  3 | GraphicsPerfSvc:3
+  SVCS  4 | spectrum:3 VacSvc:3
+  opt   extreme | Extreme
+  USE   balanced
+  SVCS  4 | ALG:3 SDRSVC:3 QWAVE:3 PhoneSvc:3 cloudidsvc:3 CloudBackupRestoreSvc:3 fhsvc:3 wbengine:3 NvContainerNetworkService:3 WinRM:3
+  SVCS  4 | lms dsaupdateservice appvvemgr hidir usbcir rdpbus synth3dvsc
+  SVCS  4 | WebClient:3 FDResPub:3 upnphost:3 ADPSvc:3 AppMgmt:3 dcsvc:3 DmEnrollmentSvc:3 lltdsvc:3 NaturalAuthentication:3 PerfHost:3 pla:3 sstpsvc:3 wlpasvc:3
+  SVCS  4 | SCardSvr:3 ScDeviceEnum:3 srv cdfs wcnfs sgrmbroker PNRPAutoReg:3 RpcLocator:3 SNMPTrap:3 ssh-agent:4 WiaRpc:3 wcncsvc:3
+  SVCS  4 | TieringEngineService:3 UevAgentService:4 workfolderssvc:3 WidgetUserService SharedPC:4 ErrDev scfilter RDPDR RdpVideominiport terminpt TsUsbFlt TsUsbGD tsusbhub lltdio rspndr MsLldp NdisCap
+  SVCS  4 | Filetrace VerifierExt circlass CSC amdfendr amdfendrmgr LocalKdc refsdedupsvc hpatchmon McmSvc WManSvc MSRDC-Infrastructure lmhosts:3
+  SVCS  4 | serial serenum sermouse fdc flpydisk sfloppy
+  SVCS  4 | AarSvc:3 AarSvc_* icssvc:3
+  SVCS  4 | OneSyncSvc_* MessagingService_* PimIndexMaintenanceSvc_* webthreatdefusersvc_* BcastDVRUserService_* GraphicsPerfSvc_* SmsRouterSvc_*
+  SVCS  3 | CDPSvc:2 LanmanServer:2
+  STOPDISABLED
+  T     disable \Microsoft\Windows\WindowsBackup\ConfigNotification
+  T     disable \Microsoft\Windows\WindowsBackup\AutomaticBackup
+  T     disable \Microsoft\Windows\User Profile Service\HiveUploadTask
+  T     disable \Microsoft\Windows\SideShow\
+  T     disable \Microsoft\Windows\Ras\MobilityManager
+  T     disable \Microsoft\Windows\NetCfg\BindingWorkItemQueueHandler
+  T     disable \Microsoft\Windows\MUI\LPRemove
+  T     disable \Microsoft\Windows\Mobile Broadband Accounts\MNO Metadata Parser
+  T     disable \Microsoft\Windows\SpacePort\SpaceAgentTask
+  T     disable \Microsoft\Windows\Storage Tiers Management\Storage Tiers Management Initialization
+  T     disable \Microsoft\Windows\Task Manager\Interactive
+
+tweak win.sysmain | cached | rec
+  name  SysMain service off
+  desc  Stops the SysMain (Superfetch) service that preloads apps into memory. Use with Memory > Prefetch & SysMain.
+  SVCS  4 | SysMain:2
+
+tweak win.searchsvc | manage_search
+  name  Search indexer service off
+  desc  Stops the Windows Search indexer. Searching still works but is slower because nothing is indexed.
+  SVCS  4 | WSearch:2
+
+tweak win.camerasvc | videocam_off | risk2
+  name  Camera service off
+  desc  Turns off the Windows camera frame server. Webcams stop working in every app until you turn it back on.
+  SVCS  4 | FrameServer:3 FrameServerMonitor:3
+
+tweak win.diagtrack | analytics | rec
+  name  Telemetry service off
+  desc  Stops the Connected User Experiences and Telemetry service and the WAP push service that feeds it.
+  SVCS  4 | DiagTrack:2 dmwappushservice:3
+
+tweak win.rdp | desktop_access_disabled
+  name  Remote Desktop off
+  desc  Turns off Remote Desktop, its redirection drivers and Windows Remote Management, so nobody can connect to this PC remotely.
+  SVCS  4 | TermService:3 UmRdpService:3 WinRM:3 rdpbus rdpdr RdpVideominiport terminpt TsUsbFlt TsUsbGD tsusbhub
+
+tweak win.hyperv | dns | risk2 reboot
+  name  Hyper-V off
+  desc  Turns off the hypervisor and the Hyper-V guest and host services. WSL2, Windows Sandbox, Android apps and virtual machines stop working until you turn it back on.
+  SVCS  4 | HvHost:3 vmickvpexchange:3 vmicguestinterface:3 vmicshutdown:3 vmicheartbeat:3 vmicvmsession:3 vmicrdv:3 vmictimesync:3 vmicvss:3 Vid HvService HyperVideo gencounter hyperkbd vmgid vpci
+  BCD   /set hypervisorlaunchtype off
+  off:
+  BCD   /set hypervisorlaunchtype auto
+
+tweak win.phone | phone_disabled
+  name  Telephony services off
+  desc  Turns off the phone service and the automatic time zone from mobile networks. Only for PCs without a SIM card.
+  SVCS  4 | PhoneSvc:3 autotimesvc:3
+
+tweak win.bits | cloud_sync | risk2
+  name  Background transfer service off
+  desc  Turns off BITS. Windows Update and Store downloads stop, so only use it together with Turn off Windows Update.
+  SVCS  4 | BITS:3
+
+sub startup | Startup apps
+
+tweak apps.startupoff | power_settings_new | risk2
+  name  Startup apps off
+  desc  Turns off every app that starts with Windows (the same switch as Task Manager's Startup apps page), so only what you open yourself runs. Windows Security, audio and touchpad helpers are kept. Switching it back on restores each app's previous state.
+  STARTUPOFF SecurityHealth* *Realtek* RtkAud* *Synaptics* ETD* *Elan* *Touchpad* *Precision*
+
+tweak apps.discordboot | power_settings_new | rec
+  name  Discord at startup off
+  desc  Stops Discord from starting with Windows. Open it yourself when you need it.
+  R-    UCV\Run | Discord
+  R     UCV\Explorer\StartupApproved\Run | Discord | b:030000000000000000000000 | -
+
+
+sub remove | Remove apps
+
+tweak apps.debloat | delete_sweep | pick rec
+  name  Preinstalled apps
+  desc  Pick the groups of preinstalled apps to uninstall for every user. Removed apps are also deprovisioned, so new accounts and feature updates do not bring them back. You can reinstall any of them from the Store.
+  R-    M\PolicyManager\current\device\ApplicationManagement | NonRemovableAppsPolicyList
+  R-    M\PolicyManager\default\ApplicationManagement | NonRemovableAppsPolicyList
+  R-    PW\Appx | NonRemovableApps
+  item  msextras | Microsoft extras | rec
+  A     Microsoft.BingWeather Microsoft.BingFinance Microsoft.BingNews Microsoft.BingSports Microsoft.BingTranslator Microsoft.BingFoodAndDrink Microsoft.BingHealthAndFitness Microsoft.BingTravel Microsoft.BingSearch MicrosoftCorporationII.Bing
+  A     Microsoft.GetHelp Microsoft.Getstarted Microsoft.Tips Microsoft.Messaging Microsoft.Microsoft3DViewer Microsoft.Print3D Microsoft.MixedReality.Portal Microsoft.OneConnect Microsoft.People Microsoft.Wallet
+  A     Microsoft.MicrosoftSolitaireCollection Microsoft.WindowsFeedbackHub Microsoft.WindowsSoundRecorder Microsoft.MicrosoftStickyNotes Microsoft.ZuneMusic Microsoft.ZuneVideo Microsoft.Todos Microsoft.PowerAutomateDesktop
+  A     Clipchamp.Clipchamp MicrosoftCorporationII.MicrosoftFamily Microsoft.549981C3F5F10 Microsoft.Cortana Microsoft.Advertising.Xaml Microsoft.Services.Store.Engagement Microsoft.MicrosoftJournal Microsoft.PCManager
+  A     Microsoft.NetworkSpeedTest Microsoft.RemoteDesktop Microsoft.Flipgrid Microsoft.Whiteboard Microsoft.M365Companions MicrosoftCorporationII.QuickAssist Microsoft.PPIProjection Ink.Handwriting CamoStudio
+  A!    Microsoft.Windows.DevHome
+  item  office | Office, Outlook & Mail | rec
+  A     Microsoft.MicrosoftOfficeHub Microsoft.Office.OneNote Microsoft.Office.Sway Microsoft.Office.Word Microsoft.Office.Excel Microsoft.Office.PowerPoint microsoft.windowscommunicationsapps Microsoft.OutlookForWindows Microsoft.OutlookPWA
+  A     Microsoft.MicrosoftPowerBIForWindows Microsoft.MicrosoftTeamsforSurfaceHub MicrosoftCorporationII.MailforSurfaceHub Microsoft.SkypeApp
+  item  phone | Phone Link & Cross Device | rec
+  A     Microsoft.YourPhone MicrosoftWindows.CrossDevice
+  item  widgets | Widgets platform | rec
+  A!    MicrosoftWindows.Client.WebExperience Microsoft.WidgetsPlatformRuntime
+  item  thirdparty | Games, streaming & social apps | rec
+  A     king.com.CandyCrushSaga king.com.CandyCrushSodaSaga king.com.BubbleWitch3Saga king.com.FarmHeroesSaga Microsoft.MinecraftUWP RobloxCorporation.Roblox Microsoft.Asphalt8 Microsoft.Asphalt9 CaesarsSlots HiddenCity FarmVille DisneyMagicKingdoms
+  A     ByteDance.TikTok Facebook.Instagram Facebook.Facebook Facebook.Messenger WhatsApp.WhatsApp 4DF9E0F8.Netflix Disney.37853FC22B2CE Pinterest.Pinterest 7EE7776C.LinkedInforWindows Amazon.com.Amazon AmazonVideo.PrimeVideo HULULLC.HULUPLUS
+  A     SpotifyAB.SpotifyMusic Microsoft.Spotify AppleInc.AppleMusicWin AppleInc.iTunes AdobeSystemsIncorporated.AdobePhotoshopExpress DolbyLaboratories.DolbyAccess BookingApp Plex Shazam Viber WinZip Duolingo Fitbit PicsArt Polarr
+  A     DrawboardPDF Flipboard XING Pandora TuneInRadio SlingTV Phototastic AutodeskSketchBook Wunderlist CyberLink Sidia NYTCrossword BlipStudio iHeartRadio EclipseManager ActiproSoftware ACGMediaPlayer LiveWallpaper OneCalendar
+  item  oem | PC maker apps
+  A     DellInc.DellDigitalDelivery DellInc.DellMobileConnect DellInc.DellSupportAssist E046963F.LenovoCompanion LenovoCompanyLimited.LenovoVantageService AD2F1837
+  item  system | Hidden system extras
+  A!    Microsoft.ECApp Microsoft.Windows.Apprep.ChxApp Microsoft.Windows.ContentDeliveryManager Microsoft.Windows.PeopleExperienceHost Microsoft.Windows.SecureAssessmentBrowser Microsoft.DismInstallManager Microsoft.AssignedAccessLockApp
+  A!    Microsoft.Windows.ParentalControls Microsoft.Windows.PinningConfirmationDialog Microsoft.Windows.OOBENetworkCaptivePortal Microsoft.Windows.OOBENetworkConnectionFlow
+  item  copilot | Copilot & AI apps | rec
+  A!    Microsoft.Copilot MSCopilot Microsoft.Copilot365 Microsoft.MicrosoftCopilot Microsoft.Windows.Copilot MicrosoftWindows.Client.Copilot Microsoft.Windows.Ai.Copilot.Provider MicrosoftWindows.Client.AIX Microsoft.Windows.AIHub *Windows.Client.CoreAI*
+  item  teams | Teams
+  A!    MicrosoftTeams MSTeams Microsoft.Teams
+  ASETUP Teams|MSTeams
+  RUNDEL com.squirrel.Teams.Teams
+  RUNDEL MSTeams
+  RUNDEL TeamsMachineInstaller
+  item  paint | Paint
+  A     Microsoft.MSPaint Microsoft.Paint
+  item  photos | Photos
+  A!    Microsoft.Windows.Photos
+  item  camera | Camera
+  A!    Microsoft.WindowsCamera
+  item  alarms | Clock
+  A!    Microsoft.WindowsAlarms
+  item  maps | Maps
+  A     Microsoft.WindowsMaps
+  SPV   maps maps-downloadmaps
+  item  calc | Calculator
+  A!    Microsoft.WindowsCalculator
+  item  notepad | Notepad
+  A!    Microsoft.WindowsNotepad
+  item  snip | Snipping Tool
+  A     Microsoft.ScreenSketch
+  item  terminal | Terminal
+  A!    Microsoft.WindowsTerminal
+  item  wsl | Windows Subsystem for Linux
+  A     Microsoft.WSL MicrosoftCorporationII.WindowsSubsystemForLinux
+  SVCS  4 | WslService:3 p9rdrservice:3
+  item  wallet | Wallet service
+  SVCS  4 | WalletService:3
+
+tweak apps.store | storefront | risk3
+  name  Remove Microsoft Store
+  desc  Removes the Microsoft Store, Store purchases and the Windows Backup app, blocks the Store by policy and stops its install and licence services. Store apps you already have keep working until they need an update. Switching off unblocks the Store, but you need to reinstall it with winget or wsreset.
+  A!    Microsoft.WindowsStore Microsoft.StorePurchaseApp Microsoft.WindowsBackup
+  R     PM\WindowsStore | RemoveWindowsStore | d:1 | -
+  R     PM\WindowsStore | DisableStoreApps | d:1 | -
+  SVCS  4 | AppXSvc:3 ClipSVC:3 AppReadiness:3 LicenseManager:3 InstallService:3 PushToInstall:3
+  T     disable \Microsoft\Windows\InstallService\
+  T     disable \Microsoft\Windows\PushToInstall\
+  T     disable \Microsoft\Windows\Subscription\
+
+tweak apps.stepsrec | screen_record | rec
+  name  Remove Steps Recorder
+  desc  Removes the old Steps Recorder (psr.exe) capability, which Windows is retiring anyway.
+  CAP   App.StepsRecorder~~~~0.0.1.0
+
+tweak apps.a11ytools | accessibility_new | risk2
+  name  Accessibility tools off
+  desc  Disables Narrator, Magnifier, the On-Screen Keyboard, Voice Access and Live Captions by renaming their programs. Only for PCs where nobody needs them; switching off restores them.
+  FILEOFF %SystemRoot%\System32\Narrator.exe
+  FILEOFF %SystemRoot%\System32\Magnify.exe
+  FILEOFF %SystemRoot%\System32\osk.exe
+  FILEOFF %SystemRoot%\System32\VoiceAccess.exe
+  FILEOFF %SystemRoot%\System32\LiveCaptions.exe
+
+sub onedrive | OneDrive
+
+tweak apps.onedrive | cloud_off | action risk2
+  name  Remove OneDrive
+  desc  First moves your Desktop, Documents, Pictures, Music and Videos back out of OneDrive into your profile, then uninstalls OneDrive, removes its tasks, sync roots, Explorer entry and startup items, and blocks it by policy. Files that are only in the cloud are not downloaded, so make sure they are synced first.
+  KFRESTORE OneDrive
+  KILL  OneDrive
+  KILL  OneDrive.App
+  KILL  FileCoAuth
+  RUNREG HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OneDrive | UninstallString
+  RUNREG HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\OneDrive | UninstallString
+  RUNREG UCV\Uninstall\OneDrive | UninstallString
+  RUNGLOB %SystemRoot%\System32\OneDriveSetup.exe | /uninstall
+  RUNGLOB %SystemRoot%\SysWOW64\OneDriveSetup.exe | /uninstall
+  RUNGLOB %LOCALAPPDATA%\Microsoft\OneDrive\*\OneDriveSetup.exe | /uninstall
+  A     Microsoft.OneDrive
+  R     PW\OneDrive | DisableFileSyncNGSC | d:1 | -
+  T     delete \Microsoft\Windows\OneDrive\
+  T     delete \OneDrive*
+  SVCS  4 | OneSyncSvc:2 OneSyncSvc_*
+  SVCS  3 | cldflt:2
+  DELFILE %SystemRoot%\System32\OneDriveSetup.exe
+  DELFILE %SystemRoot%\SysWOW64\OneDriveSetup.exe
+  DELDIR %ProgramData%\Microsoft OneDrive
+  DELDIR %ProgramFiles%\Microsoft OneDrive
+  DELDIR %ProgramFiles(x86)%\Microsoft OneDrive
+  DELDIR %LOCALAPPDATA%\Microsoft\OneDrive
+  DELDIR %LOCALAPPDATA%\Microsoft\OneDriveSetup
+  DELDIR %SystemDrive%\Users\Default\AppData\Local\Microsoft\OneDrive
+  DELDIR %SystemDrive%\Users\Default\AppData\Local\Microsoft\OneDriveSetup
+  DELEMPTY %USERPROFILE%\OneDrive
+  DELFILE %APPDATA%\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk
+  DELFILE %ProgramData%\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk
+  DELFILE %SystemDrive%\Users\Default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk
+  DELFILE %USERPROFILE%\Desktop\OneDrive.lnk
+  K-    CV\Uninstall\OneDrive
+  K-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\OneDrive
+  KMATCH CV\Explorer\SyncRootManager | OneDrive
+  KMATCH UCV\Explorer\BannerStore | OneDrive
+  KMATCH UCV\Explorer\AutoplayHandlers\Handlers | OneDrive
+  K-    UCV\Explorer\Desktop\NameSpace\{018D5C66-4533-4307-9B53-224DE2ED1FE6}
+  K-    HKU\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{018D5C66-4533-4307-9B53-224DE2ED1FE6}
+  R     HKCU\Software\Classes\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6} | System.IsPinnedToNameSpaceTree | d:0 | -
+  R     HKCU\Software\Classes\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6} | System.IsPinnedToNameSpaceTree | d:0 | -
+  R-    HKCU\Environment | OneDrive
+  RUNDEL OneDrive
+  RUNDEL OneDriveSetup
+  R-    CV\RunOnce | OneDriveSetup
+  R-    CV\RunOnce | OneDrive
+  R-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run | OneDriveSetup
+  ASETUP OneDrive|OneDriveSetup
+  R     NT\Image File Execution Options\mobsync.exe | Debugger | s:%SystemRoot%\System32\systray.exe | -
+  REFRESH
+
+sub xbox | Xbox & Game Bar
+
+tweak apps.xbox | sports_esports | risk2
+  name  Remove Xbox apps
+  desc  Removes the Xbox app, Game Pass, Xbox Live, identity provider and gaming services, disables the Xbox services and stops "you need an app for ms-gamebar" pop-ups. Games from the Xbox app or Game Pass stop working; Steam and other launchers are not affected.
+  A     Microsoft.XboxApp Microsoft.GamingApp Microsoft.XboxAppServices Microsoft.Xbox Microsoft.XboxGamePass Microsoft.XboxGamePassDialog Microsoft.XboxLive Microsoft.XboxIdentityProvider Microsoft.UWPXboxLiveEvents
+  A     Microsoft.XboxGameOverlayFPS Microsoft.XboxGamingSupportSoftware Microsoft.XboxGameCallableUI Microsoft.XboxSpeechToTextOverlay
+  SVCS  4 | XblAuthManager:3 XblGameSave:3 XboxNetApiSvc:3 XboxGipSvc:3 xbgm:3 GamingServices:2 GamingServicesNet:3 GamingServicesAlt
+  T     disable \Microsoft\XblGameSave\XblGameSaveTask
+  R     M\WindowsRuntime\ActivatableClassId\Microsoft.Xbox.GamingAI.Companion.Host.GamingCompanionHostOptions | ActivationType | d:4294967295 | -
+  R     M\WindowsRuntime\ActivatableClassId\Microsoft.Xbox.GamingAI.Companion.Host.GamingCompanionHostOptions | Server | s: | -
+  R     HKCR\ms-gamebar |  | s:URL:ms-gamebar | -
+  R     HKCR\ms-gamebar | URL Protocol | s: | -
+  R     HKCR\ms-gamebar\shell\open\command |  | s:%SystemRoot%\System32\systray.exe | -
+
+tweak apps.gamebar | gamepad | risk2
+  name  Remove Game Bar
+  desc  Removes the Game Bar overlay and blocks it from starting. Win+G, Xbox party chat in the overlay and the Game Bar performance widgets stop working.
+  A!    Microsoft.XboxGamingOverlay Microsoft.XboxGameOverlay Microsoft.Xbox.TCUI
+  R     NT\Image File Execution Options\GameBar.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+  R     NT\Image File Execution Options\GameBarFT.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+  R     NT\Image File Execution Options\GameBarFTServer.exe | Debugger | s:%WINDIR%\System32\taskkill.exe | -
+
+sub cleaners | App cleaners
+
+tweak apps.steamcache | cleaning_services | action
+  name  Steam web cache
+  desc  Closes Steam and clears its web and HTML caches, which fixes a slow or blank Steam store.
+  KILL  steam
+  DELDIR %ProgramFiles(x86)%\Steam\appcache\httpcache
+  DELDIR %ProgramFiles(x86)%\Steam\config\htmlcache
+  DELDIR %ProgramFiles%\Steam\appcache\httpcache
+  DELDIR %ProgramFiles%\Steam\config\htmlcache
+
+sub install | Install
+
+tweak apps.runtimes | download | action
+  name  Visual C++ & DirectX runtimes
+  desc  Installs every Visual C++ redistributable from 2005 to the latest, the DirectX runtime and the .NET 8 desktop runtime, which older games and tools need. They come from Microsoft through winget, Windows' own package manager.
+  WINGET Microsoft.VCRedist.2005.x86
+  WINGET Microsoft.VCRedist.2005.x64 | x64
+  WINGET Microsoft.VCRedist.2008.x86
+  WINGET Microsoft.VCRedist.2008.x64 | x64
+  WINGET Microsoft.VCRedist.2010.x86
+  WINGET Microsoft.VCRedist.2010.x64 | x64
+  WINGET Microsoft.VCRedist.2012.x86
+  WINGET Microsoft.VCRedist.2012.x64 | x64
+  WINGET Microsoft.VCRedist.2013.x86
+  WINGET Microsoft.VCRedist.2013.x64 | x64
+  WINGET Microsoft.VCRedist.2015+.x86
+  WINGET Microsoft.VCRedist.2015+.x64 | x64
+  WINGET Microsoft.DirectX
+  WINGET Microsoft.DotNet.DesktopRuntime.8
+
+tweak apps.openshell | start | action
+  name  Open-Shell Start menu
+  desc  Installs Open-Shell through winget and sets it up with a clean dark classic Start menu, no web search, no tracking of recent programs and no update checks.
+  WINGET Open-Shell.Open-Shell-Menu
+  R     HKLM\SOFTWARE\OpenShell\OpenShell | Update | d:0 | -
+  R     HKCU\Software\OpenShell\StartMenu | ShowedStyle2 | d:1 | -
+  OSHELL RecentPrograms=s:None RecentMetroApps=0 EnableJumplists=0 HybridShutdown=0 StartScreenShortcut=0 AutoStart=1 HighlightNew=0 HighlightNewApps=0 ShiftClick=s:ClassicMenu ShiftWin=s:ClassicMenu CheckWinUpdates=0
+  OSHELL SearchTrack=0 SearchAutoComplete=0 SearchPath=0 SearchMetroApps=0 SearchMetroSettings=0 SearchKeywords=0 SearchSubWord=0 SearchFiles=0 SearchContents=0 SearchCategories=0 SearchInternet=0 MoreResults=0
+  OSHELL MainMenuAnimate=0 NumericSort=0 FontSmoothing=s:None MenuShadow=0 EnableGlass=0 GlassOverride=1 GlassColor=2039583 SkinW7=s:Immersive SkinVariationW7=s: SkipMetro=1 NoSearchBox=1 PreCacheIcons=0 EnableAccelerators=0
+  OSHELL CustomTaskbar=1 TaskbarLook=s:Opaque TaskbarColor=1315860
+  R     HKCU\Software\OpenShell\StartMenu\Settings | SkinOptionsW7 | m:LIGHT=0\0DARK=1\0AUTO=0\0USER_IMAGE=0\0USER_NAME=0\0CENTER_NAME=0\0SMALL_ICONS=1\0OPAQUE=1\0DISABLE_MASK=0\0BLACK_TEXT=0\0BLACK_FRAMES=0\0TRANSPARENT_LESS=0\0TRANSPARENT_MORE=0 | -
+  R     UCV\Explorer\Advanced | TaskbarAl | d:1 | -
+
+tweak apps.browser | public | action
+  name  Install a browser
+  desc  Installs the latest version through winget and sets privacy policies for it: no telemetry, no sponsored content, uBlock Origin offered on first start.
+  opt   firefox | Firefox
+  WINGET Mozilla.Firefox
+  FILE  %ProgramFiles%\Mozilla Firefox\distribution\policies.json | {"policies":{"DisableTelemetry":true,"DisableFirefoxStudies":true,"DisablePocket":true,"DisableDefaultBrowserAgent":true,"CaptivePortal":false,"FirefoxHome":{"SponsoredTopSites":false,"SponsoredPocket":false},"Preferences":{"app.normandy.api_url":"","app.normandy.enabled":false,"browser.aboutConfig.showWarning":false,"browser.contentblocking.category":{"Value":"strict","Status":"user"},"browser.crashReports.unsubmittedCheck.autoSubmit":false,"browser.download.manager.addToRecentDocs":false,"browser.newtabpage.activity-stream.discoverystream.enabled":false,"browser.newtabpage.activity-stream.feeds.telemetry":false,"browser.newtabpage.activity-stream.showSponsored":false,"browser.newtabpage.activity-stream.showSponsoredTopSites":false,"browser.newtabpage.activity-stream.telemetry":false,"browser.pagethumbnails.capturing_disabled":true,"browser.ping-centre.telemetry":false,"browser.search.suggest.enabled":false,"browser.shell.checkDefaultBrowser":false,"browser.tabs.crashReporting.sendReport":false,"browser.urlbar.quicksuggest.enabled":false,"browser.urlbar.speculativeConnect.enabled":false,"datareporting.healthreport.uploadEnabled":false,"datareporting.policy.dataSubmissionEnabled":false,"dom.private-attribution.submission.enabled":false,"dom.security.https_only_mode":true,"network.predictor.enabled":false,"network.prefetch-next":false,"privacy.trackingprotection.enabled":true,"toolkit.telemetry.archive.enabled":false,"toolkit.telemetry.bhrPing.enabled":false,"toolkit.telemetry.coverage.opt-out":true,"toolkit.telemetry.firstShutdownPing.enabled":false,"toolkit.telemetry.newProfilePing.enabled":false,"toolkit.telemetry.server":"data:,","toolkit.telemetry.shutdownPingSender.enabled":false,"toolkit.telemetry.unified":false,"toolkit.telemetry.updatePing.enabled":false},"ExtensionSettings":{"uBlock0@raymondhill.net":{"install_url":"https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi","installation_mode":"normal_installed"}}}}
+  SVCS  4 | MozillaMaintenance:3
+  opt   brave | Brave
+  WINGET Brave.Brave
+  POLICY HKLM\SOFTWARE\Policies\BraveSoftware\Brave | BraveRewardsDisabled=1 BraveWalletDisabled=1 BraveVPNDisabled=1 BraveAIChatEnabled=0 BraveStatsPingEnabled=0 BraveNewsDisabled=1 BraveTalkDisabled=1 TorDisabled=1 BraveP3AEnabled=0 MetricsReportingEnabled=0 SafeBrowsingExtendedReportingEnabled=0 WebRtcMultipleRoutesEnabled=0
+  R     HKLM\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionSettings\cjpalhdlnbpafiamejdnhcphjbkeiagm | installation_mode | s:normal_installed | -
+  R     HKLM\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionSettings\cjpalhdlnbpafiamejdnhcphjbkeiagm | update_url | s:https://clients2.google.com/service/update2/crx | -
+  opt   chrome | Chrome
+  WINGET Google.Chrome
+  POLICY HKLM\SOFTWARE\Policies\Google\Chrome | MetricsReportingEnabled=0 PrivacySandboxPromptEnabled=0 UrlKeyedAnonymizedDataCollectionEnabled=0 WebRtcEventLogCollectionAllowed=0 CloudReportingEnabled=0 SafeBrowsingExtendedReportingEnabled=0 WebRtcMultipleRoutesEnabled=0
+  R     HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionSettings\cjpalhdlnbpafiamejdnhcphjbkeiagm | installation_mode | s:normal_installed | -
+  R     HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionSettings\cjpalhdlnbpafiamejdnhcphjbkeiagm | update_url | s:https://clients2.google.com/service/update2/crx | -
+
+sub store | Store apps
+
+tweak apps.inboxinstall | install_desktop | rec
+  name  Inbox app auto-install off
+  desc  Stops Windows Update from installing the new Outlook, Dev Home and Phone Link (Cross Device) by itself after setup or updates.
+  R     CV\WindowsUpdate\Orchestrator\UScheduler\OutlookUpdate | workCompleted | d:1 | -
+  R     CV\WindowsUpdate\Orchestrator\UScheduler\DevHomeUpdate | workCompleted | d:1 | -
+  R     CV\WindowsUpdate\Orchestrator\UScheduler\CrossDeviceUpdate | workCompleted | d:1 | -
+  R     M\WindowsUpdate\Orchestrator\UScheduler_Oobe | BlockedOobeUpdaters | s:["MS_Outlook"] | -
+  K-    M\WindowsUpdate\Orchestrator\UScheduler_Oobe\CrossDeviceUpdate
+
+tweak apps.archive | archive | rec
+  name  Automatic app archiving off
+  desc  Stops Windows from archiving Store apps you have not opened in a while, which removes their files until you launch them again.
+  R     PW\Appx | AllowAutomaticAppArchiving | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\AppManagement\AppSettings | ArchiveAppsEnabled | d:0 | -
+
+sub ai | Copilot & AI
+
+tweak apps.copilot | smart_toy | rec
+  name  Copilot off
+  desc  Turns off Windows Copilot through policy.
+  R     PW\WindowsCopilot | TurnOffWindowsCopilot | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\Windows\WindowsCopilot | TurnOffWindowsCopilot | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\WindowsCopilot | AllowCopilotRuntime | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | ShowCopilotButton | d:0 | -
+  R     UCV\Explorer\Advanced | TaskbarAi | d:0 | -
+  R     UCV\Notifications\Settings | AutoOpenCopilotLargeScreens | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\Shell\Copilot\BingChat | IsUserEligible | d:0 | -
+  R     CV\WindowsUpdate\Orchestrator\UScheduler\CopilotUpdate | workCompleted | d:1 | -
+  R     CV\WindowsUpdate\Orchestrator\UScheduler\MicrosoftWindowsClientAIXUpdate | workCompleted | d:1 | -
+  R     CV\WindowsUpdate\Orchestrator\UScheduler\MicrosoftWindowsClientCopilotUpdate | workCompleted | d:1 | -
+
+  R     M\Windows\Shell\Copilot | IsCopilotAvailable | d:0 | -
+  R     M\Windows\Shell\Copilot | CopilotDisabledReason | s:FeatureIsDisabled | -
+  R     CV\Policies\Explorer | DisableCopilotAI | d:1 | -
+  R     CV\Policies\Explorer | DisableAIDataAnalysis | d:1 | -
+  R     M\Office\16.0\Common\OfficeUpdate | preventcopilotinstall | d:1 | -
+  K-    HKCR\ms-copilot
+  K-    HKCR\ms-office-ai
+
+tweak apps.recall | neurology | rec reboot
+  name  Recall & AI actions off
+  desc  Removes the Recall feature and turns off snapshots, Click to Do, the Settings agent, the AI page in Settings, system AI model access for apps, and the AI tools in Paint, Photos and Notepad.
+  FEAT  Recall
+  SPV   aicomponents
+  K-    HKCR\ms-clicktodo
+  R     PW\WindowsAI | DisableRecall | d:1 | -
+  R     UPW\WindowsAI | AllowRecallEnablement | d:0 | -
+  R     UPW\WindowsAI | DisableAIDataAnalysis | d:1 | -
+  R     PW\WindowsAI | TurnOffSavingSnapshots | d:1 | -
+  T     disable \Microsoft\Windows\WindowsAI\
+  R     PW\AppPrivacy | LetAppsAccessSystemAIModels | d:2 | -
+  R     PW\AppPrivacy | LetAppsAccessGenerativeAI | d:2 | -
+  R     CV\CapabilityAccessManager\ConsentStore\generativeAI | Value | s:Deny | s:Allow
+  R     CV\Policies\Paint | DisableGenerativeErase | d:1 | -
+  R     CV\Policies\Paint | DisableRemoveBackground | d:1 | -
+  R     PM\WindowsNotepad | DisableAIFeatures | d:1 | -
+  R     PM\WindowsNotepad | DisableWritingTools | d:1 | -
+  R     PM\WindowsNotepad | DisableAIFeaturesInNotepad | d:1 | -
+  R     PW\WindowsAI | DisableClickToDo | d:1 | -
+  R     PW\WindowsAI | DisableSettingsAgent | d:1 | -
+  R     PW\WindowsAI | DisableImageCreator | d:1 | -
+  R     PW\WindowsAI | DisableCocreator | d:1 | -
+  R     PW\WindowsAI | DisableGenerativeFill | d:1 | -
+
+sub teams | Teams & chat
+
+tweak apps.chatinstall | chat | rec
+  name  Teams auto-install off
+  desc  Stops Windows from installing the consumer Teams (Chat) app on its own.
+  R     CV\Communications | ConfigureChatAutoInstall | d:0 | -
+
+tweak apps.teamsoffice | groups | rec
+  name  Remove Teams for Office
+  desc  Uninstalls the Teams Machine-Wide Installer and Meeting Add-in, removes their updater tasks, stops Office from reinstalling Teams and turns off the Teams add-in in Outlook.
+  C     msiexec.exe /qn /norestart /X{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}
+  MSIX  Teams Meeting Add-in|TeamsMeetingAddin|Teams Machine-Wide Installer
+  T     delete \TeamsUpdaterDaemon
+  T     delete \TeamsMachineUninstaller*
+  R     PM\Office\16.0\Teams | PreventInstallationFromMsi | d:1 | -
+  R     PM\Office\16.0\common\officeupdate | preventteamsinstall | d:1 | -
+  R     M\Office\Teams | PreventInstallationFromMsi | d:1 | -
+  R     M\Office\Outlook\Addins\TeamsAddin.FastConnect | LoadBehavior | d:0 | -
+  R     HKLM\SOFTWARE\WOW6432Node\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect | LoadBehavior | d:0 | -
+
+sub maps | Maps
+
+tweak apps.maps | map | rec
+  name  Offline maps auto-update off
+  desc  Stops Windows from downloading offline map updates in the background.
+  R     HKLM\SYSTEM\Maps | AutoUpdateEnabled | d:0 | -
+  R     PW\Maps | AutoDownloadAndUpdateMapData | d:0 | -
+  R     PW\Maps | AutoUpdateEnabled | d:0 | -
+  R     PW\Maps | UpdateOnlyOnWifi | d:1 | -
+  R     PW\Maps | AllowUntriggeredNetworkTrafficOnSettingsPage | d:0 | -
+
+sub edge | Microsoft Edge
+
+tweak apps.edgeupd | update_disabled | rec
+  name  Edge auto-install off
+  desc  Stops Edge Update from installing or upgrading Edge on its own and from creating desktop shortcuts.
+  R     PM\EdgeUpdate | DoNotUpdateToEdgeWithChromium | d:1 | -
+  R     PM\EdgeUpdate | InstallDefault | d:0 | -
+  R     PM\EdgeUpdate | UpdateDefault | d:0 | -
+  R     PM\EdgeUpdate | CreateDesktopShortcutDefault | d:0 | -
+  R     PM\EdgeUpdate | Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} | d:1 | -
+  R     PM\EdgeUpdate | Update{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} | d:1 | -
+  R     M\EdgeUpdate | DoNotUpdateToEdgeWithChromium | d:1 | -
+
+tweak apps.edgeremove | delete_forever | action risk2
+  name  Remove Microsoft Edge
+  desc  Uninstalls Edge and Edge Update, removes their services, tasks, shortcuts, protocol handlers and startup entries, and blocks reinstalls. The WebView2 runtime that other apps need is kept. Your Edge profile folder is kept too. Install another browser first.
+  KILL  msedge
+  KILL  MicrosoftEdgeUpdate
+  KILL  MicrosoftEdge
+  KILL  identity_helper
+  KILL  msedge_proxy
+  KILL  MicrosoftEdgeUpdateBroker
+  KILL  MicrosoftEdgeUpdateOnDemand
+  T     delete \MicrosoftEdgeUpdateTaskMachineCore*
+  T     delete \MicrosoftEdgeUpdateTaskMachineUA*
+  T     delete \MicrosoftEdgeUpdateBrowserReplacement*
+  R     HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev | AllowUninstall | d:1 | -
+  R-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge | NoRemove
+  R-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update | NoRemove
+  A     Microsoft.MicrosoftEdge
+  A     Microsoft.MicrosoftEdge.Stable
+  A     Microsoft.MicrosoftEdgeDevToolsClient
+  A     Microsoft.Edge.GameAssist
+  RUNGLOB %ProgramFiles(x86)%\Microsoft\Edge\Application\*\Installer\setup.exe | --uninstall --system-level --verbose-logging --force-uninstall
+  RUNGLOB %ProgramFiles%\Microsoft\Edge\Application\*\Installer\setup.exe | --uninstall --system-level --verbose-logging --force-uninstall
+  RUNREG HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate | UninstallCmdLine
+  SVCDEL edgeupdate edgeupdatem MicrosoftEdgeElevationService
+  DELDIR %ProgramFiles%\Microsoft\Edge
+  DELDIR %ProgramFiles(x86)%\Microsoft\Edge
+  DELDIR %ProgramFiles%\Microsoft\EdgeUpdate
+  DELDIR %ProgramFiles(x86)%\Microsoft\EdgeUpdate
+  DELDIR %ProgramFiles%\Microsoft\EdgeCore
+  DELDIR %ProgramFiles(x86)%\Microsoft\EdgeCore
+  DELDIR %LOCALAPPDATA%\Microsoft\EdgeUpdate
+  DELDIR %LOCALAPPDATA%\Microsoft\EdgeCore
+  DELFILE %ProgramData%\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk
+  DELFILE %PUBLIC%\Desktop\Microsoft Edge.lnk
+  DELFILE %USERPROFILE%\Desktop\Microsoft Edge.lnk
+  DELFILE %APPDATA%\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk
+  DELFILE %APPDATA%\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Microsoft Edge.lnk
+  K-    HKLM\SOFTWARE\Microsoft\Edge
+  K-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Edge
+  K-    HKLM\SOFTWARE\Clients\StartMenuInternet\Microsoft Edge
+  K-    CV\App Paths\msedge.exe
+  K-    CV\Uninstall\Microsoft Edge
+  K-    CV\Uninstall\Microsoft Edge Update
+  K-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge
+  K-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update
+  K-    HKCR\MSEdgeMHT
+  R-    HKCR\.mht\OpenWithProgIds | MSEdgeMHT
+  R-    HKCR\.mhtml\OpenWithProgIds | MSEdgeMHT
+  EXTDEL MSEDGEHTM | .html .htm .shtml .svg .webp .xhtml .xht .xml
+  K-    HKCR\CLSID\{3A84F9C2-6164-485C-A7D9-4B27F8AC009E}
+  K-    HKCR\WOW6432Node\CLSID\{3A84F9C2-6164-485C-A7D9-4B27F8AC009E}
+  K-    HKCR\CLSID\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}
+  K-    HKCR\WOW6432Node\CLSID\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}
+  R-    CV\PreviewHandlers | {3A84F9C2-6164-485C-A7D9-4B27F8AC009E}
+  K-    CV\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}
+  K-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}
+  K-    HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Ext\PreApproved\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}
+  R-    CV\Policies\Ext\CLSID | {1FD49718-1D00-4B19-AF5F-070AF6D5D54C}
+  ASETUP MicrosoftEdge|msedge|Edge Update|EdgeUpdate
+  RUNDEL MicrosoftEdgeAutoLaunch*
+  RUNDEL Microsoft Edge Update
+  R-    UCV\Explorer\Advanced | TaskbarMigratedBrowserPin
+  R     UCV\Explorer\Taskband | FavoritesChanges | d:1 | -
+  R     CV\ApplicationAssociationToasts | MSEdgeHTM_microsoft-edge | d:0 | -
+  R     CV\ApplicationAssociationToasts | MSEdgePDF_.pdf | d:0 | -
+  R     CV\ApplicationAssociationToasts | MSEdgeHTM_.htm | d:0 | -
+  R     CV\ApplicationAssociationToasts | MSEdgeHTM_.html | d:0 | -
+  R     CV\Explorer | DisableEdgeDesktopShortcutCreation | d:1 | -
+  R     M\Internet Explorer\Main\EnterpriseMode | MSEdgePath | s: | -
+  R     M\EdgeUpdate | IsEdgeStableUninstalled | d:1 | -
+  R     HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate | IsEdgeStableUninstalled | d:1 | -
+  R     HKLM\Software\OEM\MicrosoftEdge | AutoLaunchOnLogonBehavior | d:0 | -
+  R     PM\MicrosoftEdge\PhishingFilter | EnabledV9 | d:0 | -
+  R     PM\EdgeUpdate | Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} | d:0 | -
+  R     PM\EdgeUpdate | Update{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} | d:0 | -
+  R     PM\EdgeUpdate | Install{65C35B14-6C1D-4122-AC46-7148CC9D6497} | d:0 | -
+  R     PM\EdgeUpdate | Update{65C35B14-6C1D-4122-AC46-7148CC9D6497} | d:0 | -
+  R     PM\EdgeUpdate | Install{2CD8A007-E189-409D-A2C8-9AF4EF3C72AA} | d:0 | -
+  R     PM\EdgeUpdate | Update{2CD8A007-E189-409D-A2C8-9AF4EF3C72AA} | d:0 | -
+  R     PM\EdgeUpdate | Install{0D50BFEC-CD6A-4F9A-964C-C7416E3ACB10} | d:0 | -
+  R     PM\EdgeUpdate | Update{0D50BFEC-CD6A-4F9A-964C-C7416E3ACB10} | d:0 | -
+  REFRESH
+
+tweak apps.edgedebloat | tune | rec
+  name  Edge clean-up
+  desc  If you keep Edge: no startup boost, sidebar, shopping assistant, Rewards, Discover, search suggestions, web widget, first-run tour or default-browser nag, and no sync or personalization reporting.
+  POLICY PM\Edge | StartupBoostEnabled=0 HubsSidebarEnabled=0 EdgeShoppingAssistantEnabled=0 ShowMicrosoftRewards=0 PersonalizationReportingEnabled=0 SyncDisabled=1 DefaultBrowserSettingEnabled=0 SearchSuggestEnabled=0 EdgeDiscoverEnabled=0 WebWidgetAllowed=0 HideFirstRunExperience=1
+
+tweak apps.edgeai | smart_toy | rec
+  name  Edge Copilot & sidebar off
+  desc  Turns off the Copilot sidebar, page-context sharing with Copilot, AI history search, inline compose and the local AI model in Microsoft Edge.
+  R     PM\Edge | HubsSidebarEnabled | d:0 | -
+  R     PM\Edge | CopilotCDPPageContext | d:0 | -
+  R     PM\Edge | CopilotPageContext | d:0 | -
+  R     PM\Edge | EdgeEntraCopilotPageContext | d:0 | -
+  R     PM\Edge | Microsoft365CopilotChatIconEnabled | d:0 | -
+  R     PM\Edge | EdgeHistoryAISearchEnabled | d:0 | -
+  R     PM\Edge | ComposeInlineEnabled | d:0 | -
+  R     PM\Edge | GenAILocalFoundationalModelSettings | d:1 | -

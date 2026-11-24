@@ -1,0 +1,49 @@
+tab mem | Memory | memory_alt
+
+sub kernel | Kernel memory
+
+tweak mem.kernel | lock | rec ram12 reboot
+  name  Keep kernel in RAM
+  desc  Stops Windows from paging kernel code and drivers to disk and turns off page combining. Only worth it with 12 GB of RAM or more.
+  R     CC\Session Manager\Memory Management | DisablePagingExecutive | d:1 | -
+  R     CC\Session Manager\Memory Management | DisablePageCombining | d:1 | -
+
+tweak mem.svchost | account_tree | reboot
+  name  Group service hosts
+  desc  Runs Windows services in a few shared svchost processes instead of one process each, which saves memory and process overhead.
+  R     SYS\Control | SvcHostSplitThresholdInKB | d:4294967295 | d:3670016
+  SPLIT BFE DcomLaunch mpssvc PlugPlay Power SamSs EventSystem CryptSvc Dhcp Dnscache DisplayEnhancementService PcaSvc WdiSystemHost AudioEndpointBuilder Appinfo BITS gpsvc IKEEXT iphlpsvc lmhosts
+  SPLIT NcbService RasAuto RasMan SENS ShellHWDetection SstpSvc TrkWks Winmgmt EventLog FontCache NlaSvc nsi ProfSvc Schedule SessionEnv Themes W32Time Wcmsvc LanmanServer LanmanWorkstation
+
+tweak mem.fth | healing | rec
+  name  Fault Tolerant Heap off
+  desc  Stops Windows from silently applying slower crash-proof heap shims to apps that crashed before.
+  R     M\FTH | Enabled | d:0 | d:1
+  C     rundll32.exe fthsvc.dll,FthSysprepSpecialize
+
+sub cache | Prefetch & caching
+
+tweak mem.prefetch | cached | rec reboot
+  name  Prefetch & SysMain off
+  desc  Turns off the boot and app prefetcher, Superfetch and its tracing. Pointless on SSDs and frees memory and disk activity.
+  R     CC\Session Manager\Memory Management\PrefetchParameters | EnablePrefetcher | d:0 | d:3
+  R     CC\Session Manager\Memory Management\PrefetchParameters | EnableSuperfetch | d:0 | d:3
+  R     CC\Session Manager\Memory Management\PrefetchParameters | SfTracingState | d:0 | -
+  R     SV\Superfetch\Parameters | EnableSuperfetch | d:0 | -
+  R     CC\Session Manager\Memory Management\PrefetchParameters | EnableBootTrace | d:0 | -
+
+tweak mem.compress | compress | rec ram12
+  name  Memory compression off
+  desc  Stops Windows from compressing memory pages in RAM. With 4 GB or more this saves CPU time; on low-RAM PCs compression helps, so it is skipped there.
+  MMAGENT mc off
+
+tweak mem.readyboost | sd_card | rec
+  name  ReadyBoost caches off
+  desc  Stops Windows from creating ReadyBoost caches on USB sticks and SD cards. Useless with an SSD.
+  R     NT\EMDMgmt | AllowNewCachesByDefault | d:0 | -
+  R     NT\EMDMgmt | GroupPolicyDisallowCaches | d:1 | -
+
+tweak mem.inputpre | keyboard | rec
+  name  Input app preloading off
+  desc  Stops Windows from keeping the touch keyboard and handwriting panel loaded in memory in case you need them.
+  R     M\Input | IsInputAppPreloadEnabled | d:0 | -

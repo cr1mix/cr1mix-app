@@ -1,0 +1,172 @@
+tab gpu | GPU | developer_board
+
+sub sched | Scheduling & display
+
+tweak gpu.mpo | layers | rec reboot
+  name  Multi-plane overlay off
+  desc  Turns off MPO, which fixes flicker, black screens and stutter on many NVIDIA and AMD setups, especially with mixed refresh rates.
+  R     M\Windows\Dwm | OverlayTestMode | d:5 | -
+
+tweak gpu.hags | developer_board | reboot
+  name  Hardware-accelerated GPU scheduling
+  desc  Lets the GPU manage its own memory and scheduling. Needed for DLSS frame generation; on some older drivers it adds stutter, so turning it off can help.
+  opt   on | On
+  R     CC\GraphicsDrivers | HwSchMode | d:2 | -
+  opt   off | Off
+  R     CC\GraphicsDrivers | HwSchMode | d:1 | -
+  opt   default | Driver default
+  R-    CC\GraphicsDrivers | HwSchMode
+
+tweak gpu.nvcp | settings_applications | action nvidia
+  name  Repair NVIDIA Control Panel
+  desc  Sets the NVIDIA display container services back to automatic and starts them, which brings back a missing or crashing NVIDIA Control Panel.
+  SVCS  2 | NVDisplay.ContainerLocalSystem NvContainerLocalSystem NvContainerNetworkService
+  START NVDisplay.ContainerLocalSystem NvContainerLocalSystem NvContainerNetworkService
+
+tweak gpu.tdr | restart_alt | rec reboot
+  name  GPU timeout recovery
+  desc  Gives the driver 8 seconds instead of 2 before Windows resets a busy GPU, so heavy shader compiles and loading screens do not crash with a TDR.
+  R     CC\GraphicsDrivers | TdrLevel | d:3 | -
+  R     CC\GraphicsDrivers | TdrDelay | d:8 | -
+  R     CC\GraphicsDrivers | TdrDdiDelay | d:8 | -
+
+tweak gpu.energy | eco | rec
+  name  GPU energy efficiency off
+  desc  Turns off the graphics kernel's energy-efficiency mode, which lowers GPU clocks on light loads.
+  R     CC\GraphicsDrivers\Power | EnergyEfficiency | d:0 | -
+
+tweak gpu.msi | settings_input_component | reboot risk2
+  name  MSI interrupt mode
+  desc  Switches the GPU, network, NVMe, audio and USB controllers to message-signaled interrupts, which have lower latency than shared line interrupts. Virtual machines are skipped.
+  MSI
+
+sub nvidia | NVIDIA
+
+tweak gpu.nvlog | visibility_off | rec nvidia
+  name  NVIDIA driver logging & telemetry off
+  desc  Turns off the driver's event tracer, log entries, telemetry upload, tray icons and the DLSS indicator, and opts out of NVIDIA data collection.
+  R     SV\nvlddmkm\Parameters | LogWarningEntries | d:0 | -
+  R     SV\nvlddmkm\Parameters | LogPagingEntries | d:0 | -
+  R     SV\nvlddmkm\Parameters | LogEventEntries | d:0 | -
+  R     SV\nvlddmkm\Parameters | LogErrorEntries | d:0 | -
+  R     SV\nvlddmkm\Parameters | RMEnableEventTracer | d:0 | -
+  R     SV\nvlddmkm\Parameters | RMResetPerfMonD4 | d:0 | -
+  R     SV\nvlddmkm\Global\Startup | SendTelemetryData | d:0 | -
+  R     SV\nvlddmkm\Global\NVTweak | HideXGpuTrayIcon | d:1 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\NvControlPanel2\Client | OptInOrOutPreference | d:0 | -
+  R     HKCU\Software\NVIDIA Corporation\NVControlPanel2\Client | OptInOrOutPreference | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\NvTray | StartOnLogin | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\CoProcManager | ShowTrayIcon | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\NGXCore | ShowDlssIndicator | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS | EnableRID44231_20160715_152522477 | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS | EnableRID64640_20160715_152522477 | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS | EnableRID66610_20160715_152522477 | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS | EnableRID44231 | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS | EnableRID64640 | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS | EnableRID66610 | d:0 | -
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\* | RMEnableEventTracer | d:0 | - | ?nv
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\* | RMResetPerfMonD4 | d:0 | - | ?nv
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\* | RmLogonRC | d:0 | - | ?nv
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\* | RMIntrDetailedLogs | d:0 | - | ?nv
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\* | RMCtxswLog | d:0 | - | ?nv
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\* | RMNvLog | d:0 | - | ?nv
+  R     HKCU\SOFTWARE\NVIDIA Corporation\Global\GFExperience | NotifyNewDisplayUpdates | d:0 | -
+  T     disable \NvTmMon*
+  DELDIR %ProgramFiles%\NVIDIA Corporation\DisplayDriverRAS
+  DELDIR %ProgramData%\NVIDIA Corporation\DisplayDriverRAS
+
+tweak gpu.nvpower | bolt | desktop risk2 reboot nvidia
+  name  NVIDIA power saving off
+  desc  Keeps NVIDIA GPUs out of their clock-gating, power-gating, GC6 and PCIe link sleep states, and disables display power saving. Desktops only: higher idle power and temperature.
+  NVSET DisableDynamicPstate=1 RMHdcpKeyglobZero=1 RmDisableHwFaultBuffer=1 RMDisablePerIntrDPCQueueing=1 RMHotPlugSupportDisable=1 RmFbsrPagedDMA=1 RMDisablePostL2Compression=1
+  NVSET DisableAsyncPstates=1 SlideMCLK=0 RMGCOffFeature=2 RmSec2EnableApm=0 RmDisableInforomBBX=15 RmMIONoPowerOff=1 RMDisableOptimalPowerForPadlinkPll=1
+  NVSET RMEnableASPMDT=1 RMEnableASPMAtLoad=0 PerfLevelSrc=8738 D3PCLatency=1 EnableRuntimePowerManagement=0 RmProfilingAdminOnly=0
+  NVSET RMElcg=1431655765 RMBlcg=286331153 RMElpg=4095 RMSlcg=262131 RMFspg=15 RMGC6Feature=699050 RMGC6Parameters=85 RMDidleFeatureGC5=44731050
+  NVSET RMPcieLtrOverride=1 RMPcieLtrL12ThresholdOverride=0 RMDeepL1EntryLatencyUsec=1 RmOverrideIdleSlowdownSettings=0 RMClkSlowDown=71303168 RMUsbcDebugMode=0 PreferSystemMemoryContiguous=1
+  R     SV\nvlddmkm\Global\NVTweak | DisplayPowerSaving | d:0 | -
+  R     HKLM\SOFTWARE\NVIDIA Corporation\Global\NVTweak | DisplayPowerSaving | d:0 | -
+  R     SV\nvlddmkm\Global\NVTweak | RmProfilingAdminOnly | d:0 | -
+  R     SV\nvlddmkm\Global\NVTweak | NvDevToolsVisible | d:1 | -
+  R     SV\nvlddmkm | PreferSystemMemoryContiguous | d:1 | -
+  R     SV\nvlddmkm | EnableHDAudioD3Cold | d:0 | -
+
+tweak gpu.nvecc | memory | desktop risk2 reboot nvidia
+  name  NVIDIA ECC & memory scrubbing off
+  desc  Turns off ECC checks and video memory scrubbing on GeForce cards (workstation cards are skipped), and silences the driver's verbose log masks.
+  NVSET RMAERRForceDisable=1 RMNoECCFuseCheck=1 RMDisableRCOnDBE=1 RM1441072=1 RMAERRHandling=0 RMEnableL1ECC=0 RMEnableSMECC=0 RMEnableSHMECC=0 RMAssertOnEccErrors=0 ?geforce
+  NVSET RMGuestECCState=0 RMNoECCFBScrub=1 RMDisableScrubOnFree=1 RMDisableAsyncMemScrub=1 RMDisableFastScrubber=1 RMInitScrub=0 RmForceGrScrubberChannel=0 ?geforce
+  R     SV\nvlddmkm\Parameters | LogDisableMasks | b:00ffff0f01ffff0f02ffff0f03ffff0f04ffff0f05ffff0f06ffff0f07ffff0f08ffff0f09ffff0f0affff0f0bffff0f0cffff0f0dffff0f0effff0f0fffff0f10ffff0f11ffff0f12ffff0f13ffff0f14ffff0f15ffff0f16ffff0f00ffff1f01ffff1f02ffff1f03ffff1f04ffff1f05ffff1f06ffff1f07ffff1f08ffff1f09ffff1f0affff1f0bffff1f0cffff1f0dffff1f0effff1f0fffff1f00ffff2f01ffff2f02ffff2f03ffff2f04ffff2f05ffff2f06ffff2f07ffff2f08ffff2f09ffff2f0affff2f0bffff2f0cffff2f0dffff2f0effff2f0fffff2f00ffff3f01ffff3f02ffff3f03ffff3f04ffff3f05ffff3f06ffff3f07ffff3f | -
+
+tweak gpu.nvprofile | tune | rec nvidia
+  name  NVIDIA 3D settings profile
+  desc  Sets the global 3D settings through the NVIDIA driver itself, no extra tools: low latency mode, one pre-rendered frame, unlimited shader cache, threaded optimization, highest refresh rate, and driver-forced antialiasing, FXAA, sharpening, Ansel and Whisper Mode off. Desktop also forces V-Sync off, prefers maximum performance and turns off triple buffering. Takes effect right away, no restart.
+  opt   desktop | Desktop
+  USE   _common
+  NVDRS 390467 2 | Low Latency Mode: Ultra
+  NVDRS 11041231 138504007 | Vertical sync: force off
+  NVDRS 274197361 1 | Power management: prefer maximum performance
+  NVDRS 553505273 0 | Triple buffering: off
+  opt   laptop | Laptop
+  USE   _common
+  NVDRS 390467 1 | Low Latency Mode: On
+  opt   _common | -
+  NVDRS 1675263 1 | Shader cache: on
+  NVDRS 11306135 4294967295 | Shader cache size: unlimited
+  NVDRS 8102046 1 | Max pre-rendered frames: 1
+  NVDRS 546199011 1 | Max frames allowed: 1
+  NVDRS 269553971 1 | VR pre-rendered frames: 1
+  NVDRS 6600001 1 | Preferred refresh rate: highest available
+  NVDRS 549528094 1 | Threaded optimization: on
+  NVDRS 13510289 20 | Texture filtering quality: high performance
+  NVDRS 1686376 0 | Texture filtering negative LOD bias: allow
+  NVDRS 6524559 0 | Driver-controlled LOD bias: off
+  NVDRS 544832876 20 | OpenGL rendering quality: high performance
+  NVDRS 544392611 0 | OpenGL GDI compatibility: off
+  NVDRS 283962569 1 | CUDA system memory fallback: prefer none
+  NVDRS 1343646814 0 | CUDA force P2 state: off
+  NVDRS 546816758 0 | Deep colour for 3D apps: off
+  NVDRS 276757595 1 | Antialiasing mode: application-controlled
+  NVDRS 282555346 0 | Antialiasing setting: off
+  NVDRS 276652957 0 | Antialiasing gamma correction: off
+  NVDRS 283958146 0 | Antialiasing behaviour flags: none
+  NVDRS 282364549 0 | Transparency supersampling: off
+  NVDRS 284962204 0 | Transparency multisampling: off
+  NVDRS 545898348 0 | Antialiasing line gamma: off
+  NVDRS 10011052 0 | MFAA: off
+  NVDRS 276089202 0 | FXAA: off
+  NVDRS 271895433 0 | Predefined FXAA usage: off
+  NVDRS 5867849 0 | Predefined sharpening usage: off
+  NVDRS 276158834 0 | Ansel: off
+  NVDRS 271965065 0 | Predefined Ansel usage: off
+  NVDRS 9990737 0 | SILK smoothness: off
+  NVDRS 270198627 0 | Smooth AFR: off
+  NVDRS 277041152 0 | Frame rate limiter low latency: off
+  NVDRS 269573258 0 | Whisper Mode: off
+  NVDRS 269573259 0 | Whisper Mode app FPS: off
+  NVDRS 11241095 0 | VAB default data: off
+
+sub amd | AMD
+
+tweak gpu.amdfeat | auto_fix_off | rec amd
+  name  AMD driver extras off
+  desc  Turns off Radeon Chill, Anti-Lag driver hooks, Radeon Boost, ULPS sleep and USU, and sets the 3D profile to performance.
+  AMDSET KMD_USUEnable=0 KMD_ChillEnabled=0 KMD_DeLagEnabled=0 KMD_RadeonBoostEnabled=0 EnableUlps=0
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\*\UMD | Main3D_DEF | s:1 | - | ?amd
+  R     CC\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\*\UMD | Main3D | b:3100 | - | ?amd
+  R     SV\amdwddmg | ChillEnabled | d:0 | -
+  R     HKCU\Software\AMD\CN | AnimationEffect | d:0 | -
+  R     HKCU\Software\AMD\CN | AutoUpdateTriggered | d:0 | -
+  R     HKCU\Software\AMD\CN | PowerSaverAutoEnable_cur | d:0 | -
+
+tweak gpu.amdpower | bolt | desktop risk2 reboot amd
+  name  AMD power saving off
+  desc  Forces high DPM states and turns off clock gating, power gating, light sleep and PCIe ASPM on Radeon cards. Desktops only: higher idle power and temperature.
+  AMDSET PP_Force3DPerformanceMode=1 PP_ForceHighDPMLevel=1 PP_GPUPowerDownEnabled=0 DisableDynamicPstate=1 DisableDrmdmaPowerGating=1
+  AMDSET DisableGfxCoarseGrainLightSleep=1 DisableGfxCpLightSleep=1 DisableGfxMediumGrainLightSleep=1 DisableGfxRlcLightSleep=1 DisableDrmLightSleep=1
+  AMDSET DisableGfxClockGating=1 DisableSysClockGating=1 DisableVceClockGating=1 DisableAllClockGating=1 DisablePowerGating=1 DisableCpPowerGating=1 DisableUVDPowerGatingDynamic=1 DisableVCEPowerGating=1
+  AMDSET DisableAspmL0s=1 DisableAspmL1=1 DisableAspmSWL1=1 EnableAspmL0s=0 EnableAspmL1=0 EnableAspmL1SS=0 AspmL0sTimeout=0 AspmL1Timeout=0
+  AMDSET DisableClkReqSupport=1 DisableFBCSupport=1 EnableSpreadSpectrum=0 DalDisableClockGating=1
+  AMDSET DisableGfx3DCGLS=1 DisableGfxCGTS=1 DisableGfxCGTS_LS=1 DisableGfxMGCGPerfMon=1 DisableDrmdmaMGCG=1 DisableDrmMGCG=1 DisableGfx3DCGCG=1 EnableUvdClockGating=0 EnableVceSwClockGating=0
+  AMDSET EnableGfxClockGatingThruSmu=0 EnableSysClockGatingThruSmu=0 IRQMgrDisableIHClockGating=1 DisableRomMediumGrainClockGating=1 DisableRomMGCGClockGating=1 DisableSamuClockGating=1
+  AMDSET DisableGfxCoarseGrainClockGating=1 DisableGfxMediumGrainClockGating=1 DisableMcMediumGrainClockGating=1 DisableNbioMediumGrainClockGating=1 DisableAcpPowerGating=1 DisableDynamicGfxMGPowerGating=1
+  AMDSET DisableGDSPowerGating=1 DisableGfxCGPowerGating=1 DisableGFXPipelinePowerGating=1 DisableQuickGfxMGPowerGating=1 DisableSAMUPowerGating=1 DisableStaticGfxMGPowerGating=1 DisableXdmaPowerGating=1 DisableXdmaSclkGating=1

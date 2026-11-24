@@ -1,0 +1,165 @@
+tab sto | Storage | hard_drive
+
+sub clean | Cleanup
+
+tweak sto.cleantemp | cleaning_services | action rec
+  name  Temporary files
+  desc  Deletes temp folders, the Windows Update download cache, Delivery Optimization cache, error-report temp files, old prefetch data, Edge Update downloads, telemetry trace logs and the thumbnail and icon caches. Files in use are skipped.
+  DELCONTENT %TEMP%
+  DELCONTENT %SystemRoot%\Temp
+  DELCONTENT %SystemDrive%\Temp
+  DELCONTENT %SystemRoot%\CbsTemp
+  DELCONTENT %SystemRoot%\Prefetch
+  DELCONTENT %SystemRoot%\SoftwareDistribution\Download
+  DELCONTENT %SystemRoot%\SoftwareDistribution\DeliveryOptimization
+  DELCONTENT %ProgramData%\Microsoft\Windows\DeliveryOptimization\Cache
+  DELCONTENT %ProgramData%\Microsoft\Windows\WER\Temp
+  DELDIR %ProgramFiles(x86)%\Microsoft\EdgeUpdate\Download
+  DELGLOB %ProgramData%\Microsoft\Diagnosis\ETLLogs\AutoLogger\DiagTrack*
+  DELGLOB %ProgramData%\Microsoft\Diagnosis\ETLLogs\ShutdownLogger\DiagTrack*
+  DELGLOB %LOCALAPPDATA%\Microsoft\Windows\Explorer\thumbcache_*.db
+  DELGLOB %LOCALAPPDATA%\Microsoft\Windows\Explorer\iconcache_*.db
+
+tweak sto.cleanmgr | delete_sweep | action rec
+  name  Disk Cleanup
+  desc  Runs Windows Disk Cleanup with every safe category ticked: setup and upgrade logs, old chkdsk files, driver packages, memory dumps, error reports, Delivery Optimization files, BranchCache and old sync files. The Recycle Bin and Downloads are never touched.
+  CLEANMGR Active Setup Temp Folders|BranchCache|Delivery Optimization Files|Device Driver Packages|Downloaded Program Files|Internet Cache Files|Offline Pages Files|Old ChkDsk Files|RetailDemo Offline Content|Setup Log Files|System error memory dump files|System error minidump files|Temporary Setup Files|Temporary Sync Files|Upgrade Discarded Files|User file versions|Windows Defender|Windows Error Reporting Files|Windows Reset Log Files|Windows Upgrade Log Files|Thumbnail Cache
+
+tweak sto.component | inventory | action
+  name  Component store cleanup
+  desc  Removes superseded Windows update files from the component store (WinSxS). Takes several minutes; installed updates can no longer be uninstalled afterwards.
+  C     Dism.exe /Online /Cleanup-Image /StartComponentCleanup /Quiet /NoRestart
+
+tweak sto.leftovers | folder_delete | action
+  name  Windows.old & setup leftovers
+  desc  Deletes Windows.old from the last feature update, the empty IIS and PerfLogs folders, the WinRE update agent folder and DumpStack logs. You can no longer roll back to the previous Windows version.
+  DELDIR %SystemDrive%\Windows.old
+  DELDIR %SystemDrive%\inetpub
+  DELDIR %SystemDrive%\PerfLogs
+  DELDIR %SystemDrive%\$WinREAgent
+  DELFILE %SystemDrive%\DumpStack.log
+  DELFILE %SystemDrive%\DumpStack.log.tmp
+
+tweak sto.shader | blur_on | action rec
+  name  Shader caches
+  desc  Clears the NVIDIA, AMD, Intel and DirectX shader caches. Games rebuild them on first launch, which fixes stutter from a corrupted cache.
+  DELCONTENT %LOCALAPPDATA%\NVIDIA\GLCache
+  DELCONTENT %LOCALAPPDATA%\NVIDIA\DXCache
+  DELCONTENT %LOCALAPPDATA%\AMD\DxCache
+  DELCONTENT %LOCALAPPDATA%\AMD\DxcCache
+  DELCONTENT %LOCALAPPDATA%\AMD\GLCache
+  DELCONTENT %LOCALAPPDATA%\Intel\ShaderCache
+  DELCONTENT %LOCALAPPDATA%\D3DSCache
+  DELCONTENT %LOCALAPPDATA%\Microsoft\DirectX\ShaderCache
+
+tweak sto.shaderweekly | event_repeat
+  name  Weekly shader cleanup
+  desc  Clears the shader caches every Sunday at 03:00 with a small hidden cr1mix app task.
+  SCHED weekly | shader
+
+tweak sto.appcache | apps | action
+  name  App caches
+  desc  Clears the Windows web cache and the Discord and Spotify caches. Nothing you saved is removed; the apps simply download what they need again.
+  DELCONTENT %LOCALAPPDATA%\Microsoft\Windows\WebCache
+  DELCONTENT %APPDATA%\Discord\Cache
+  DELCONTENT %APPDATA%\Discord\Code Cache
+  DELCONTENT %LOCALAPPDATA%\Spotify\Data
+
+tweak sto.eventlogs | event_note | action
+  name  Event logs
+  desc  Clears every Windows event log. Do not run it if you are troubleshooting a problem, because the logs are the evidence.
+  EVTCLEAR
+
+tweak sto.links | link_off | action rec
+  name  Broken Start menu shortcuts
+  desc  Removes Start menu shortcuts that point to programs that no longer exist, and the empty folders they leave.
+  LNKCLEAN
+
+tweak sto.shellcache | restart_alt | action
+  name  Reset Start & Search
+  desc  Resets the data of the Start menu, Search and shell component apps. Fixes a broken or blank Start menu, but your Start pins go back to default.
+  ARESET *Client.CBS* *StartMenuExperienceHost* *Windows.Search*
+
+sub fs | File system
+
+tweak sto.ntfs | folder_data | rec reboot
+  name  NTFS tuning
+  desc  Gives NTFS more paged pool for its metadata cache, stops volume shadow hints, disables NTFS compression and short 8.3 names, and makes sure TRIM stays on.
+  R     CC\FileSystem | NtfsMemoryUsage | d:2 | -
+  R     CC\FileSystem | NtfsDisableVolsnapHints | d:1 | -
+  R     CC\FileSystem | NtfsDisableLastAccessUpdate | d:2147483649 | d:2147483650
+  R     CC\FileSystem | NtfsDisable8dot3NameCreation | d:1 | d:2
+  R     SV\VolSnap | DisableVolsnapHints | d:1 | -
+  FSU   behavior set disablecompression 1
+  FSU   behavior set disable8dot3 1
+  FSU   8dot3name set 1
+  FSU   behavior set disablelastaccess 1
+  FSU   behavior set enablenonpagedntfs 1
+  FSU   behavior set disabledeletenotify 0
+  FSU   behavior set encryptpagingfile 0
+  off:
+  FSU   behavior set disablecompression 0
+  FSU   behavior set disable8dot3 2
+  FSU   8dot3name set 2
+  FSU   behavior set disablelastaccess 2
+  FSU   behavior set enablenonpagedntfs 0
+
+tweak sto.reserved | inventory_2 | rec
+  name  Reserved storage off
+  desc  Frees the roughly 7 GB Windows keeps aside for updates. Updates still install; they just use normal free space.
+  R     CV\ReserveManager | ShippedWithReserves | d:0 | -
+  R     CV\ReserveManager | ReservedStorageState | d:0 | -
+  C     DISM.exe /Online /Set-ReservedStorageState /State:Disabled /Quiet
+  off:
+  C     DISM.exe /Online /Set-ReservedStorageState /State:Enabled /Quiet
+
+tweak sto.storagesense | auto_delete
+  name  Storage Sense
+  desc  Choose whether Windows cleans temporary files on its own. On cleans temp files monthly and empties the Recycle Bin after 30 days, and never touches Downloads or OneDrive files.
+  opt   on | Monthly cleanup
+  R     UCV\StorageSense\Parameters\StoragePolicy | 01 | d:1 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 04 | d:1 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 1024 | d:1 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 2048 | d:30 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 08 | d:0 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 32 | d:0 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 02 | d:0 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 128 | d:0 | -
+  R     UCV\StorageSense\Parameters\StoragePolicy | 256 | d:0 | -
+  opt   off | Off
+  R     UCV\StorageSense\Parameters\StoragePolicy | 01 | d:0 | -
+
+sub nvme | Drives & power
+
+tweak sto.nvmethrottle | device_thermostat | rec
+  name  NVMe thermal throttle hint off
+  desc  Stops the Microsoft NVMe driver from applying its own extra thermal throttling on top of the drive's firmware.
+  R     SV\stornvme\Parameters\Device | DisableDSTThrottle | d:1 | -
+
+tweak sto.nvmeidle | bolt | desktop
+  name  NVMe low-power states off
+  desc  Keeps NVMe drives out of their deep power-saving states for faster first access. Laptops lose some battery life.
+  R     SV\stornvme\Parameters\Device | IdlePowerMode | d:0 | -
+  R     CC\Storage | StorageD3InModernStandby | d:0 | -
+
+tweak sto.linkpower | power | rec desktop
+  name  Storage link power saving off
+  desc  Turns off SATA link power management (HIPM, DIPM), hard drive head parking and StorPort idle power on desktops, so drives answer straight away.
+  RS    SV | ? | EnableHIPM | d:0
+  RS    SV | ? | EnableDIPM | d:0
+  RS    SV | ? | EnableHDDParking | d:0
+  RS    SYS\Enum | StorPort | EnableIdlePowerManagement | d:0
+
+tweak sto.nativenvme | speed | risk2 reboot
+  name  Native NVMe driver
+  desc  Switches NVMe drives to the newer native NVMe stack from Windows Server 2025 on Windows 11 24H2 and later, for lower latency and higher random I/O. Some backup and encryption tools do not support it yet.
+  R     SYS\Policies\Microsoft\FeatureManagement\Overrides | 735209102 | d:1 | -
+  R     SYS\Policies\Microsoft\FeatureManagement\Overrides | 1853569164 | d:1 | -
+  R     SYS\Policies\Microsoft\FeatureManagement\Overrides | 156965516 | d:1 | -
+  R     SYS\Policies\Microsoft\FeatureManagement\Overrides | 1409234060 | d:1 | -
+
+tweak sto.writecache | save | risk2
+  name  Write caching on all disks
+  desc  Enables write caching and treats it as power-protected, which speeds up writes. Data still in the cache can be lost on a sudden power cut.
+  R     SYS\Enum\SCSI\*\*\Device Parameters\Disk | CacheIsPowerProtected | d:1 | -
+  R     SYS\Enum\SCSI\*\*\Device Parameters\Disk | UserWriteCacheSetting | d:1 | -

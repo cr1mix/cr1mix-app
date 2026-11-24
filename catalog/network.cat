@@ -1,0 +1,275 @@
+tab net | Network | lan
+
+sub tcp | TCP/IP stack
+
+tweak net.tcpglobal | tune | rec
+  name  TCP global settings
+  desc  Latency-friendly TCP: TCP Fast Open, proportional rate reduction, RACK and tail loss probe, initial window 10, RSS on, timestamps and window-scaling heuristics off. Receive window auto-tuning stays normal.
+  C     netsh int tcp set global timestamps=disabled fastopen=enabled fastopenfallback=enabled prr=enabled autotuninglevel=normal rss=enabled
+  C     netsh int tcp set global maxsynretransmissions=2 initialRto=2000
+  C     netsh int tcp set heuristics wsh=disabled forcews=disabled
+  C     netsh int tcp set security mpp=disabled profiles=disabled
+  C     netsh int tcp set supplemental internet congestionprovider=default
+  C     netsh int tcp set supplemental template=custom icw=10 rack=enabled taillossprobe=enabled
+  C     netsh int udp set global uro=disabled uso=enabled
+  C     netsh int ipv4 set global taskoffload=enabled defaultcurhoplimit=64 loopbacklargemtu=disabled
+  C     netsh int ipv6 set global defaultcurhoplimit=64
+  off:
+  C     netsh int tcp set global timestamps=default fastopen=default fastopenfallback=default prr=default rss=default maxsynretransmissions=default initialRto=default
+  C     netsh int tcp set heuristics wsh=default forcews=default
+  C     netsh int tcp set supplemental template=custom icw=default rack=default taillossprobe=default
+  C     netsh int udp set global uro=default uso=default
+  C     netsh int ipv4 set global loopbacklargemtu=enabled
+
+tweak net.throttle | network_check | rec
+  name  Network throttling off
+  desc  Stops the multimedia scheduler from capping non-multimedia network traffic while audio or video plays.
+  R     NT\Multimedia\SystemProfile | NetworkThrottlingIndex | d:4294967295 | d:10
+
+tweak net.ports | settings_ethernet | rec
+  name  More outbound ports
+  desc  Raises the highest dynamic port to 65534, so heavy downloads and many connections never run out of ports.
+  R     SV\Tcpip\Parameters | MaxUserPort | d:65534 | -
+
+tweak net.afd | send | rec
+  name  Winsock send buffers
+  desc  Raises the datagram size Winsock sends without copying to 2 KB and keeps dynamic send buffers on, which helps UDP game traffic.
+  R     SV\AFD\Parameters | FastSendDatagramThreshold | d:2048 | -
+  R     SV\AFD\Parameters | DynamicSendBufferDisable | d:0 | -
+
+tweak net.nagle | bolt | rec
+  name  Instant TCP acknowledgements
+  desc  Sends TCP ACKs immediately and turns off Nagle batching on wired adapters, lowering latency in online games.
+  R     SV\Tcpip\Parameters\Interfaces\* | TcpAckFrequency | d:1 | - | ?wired
+  R     SV\Tcpip\Parameters\Interfaces\* | TCPNoDelay | d:1 | - | ?wired
+
+tweak net.tunnels | alt_route | rec
+  name  IPv6 tunnel adapters off
+  desc  Turns off the Teredo, ISATAP and 6to4 tunnels. Xbox party chat and some peer-to-peer games use Teredo, so leave this off if you play on Xbox Live.
+  C     netsh interface teredo set state disabled
+  C     netsh interface isatap set state disabled
+  C     netsh interface 6to4 set state disabled
+  off:
+  C     netsh interface teredo set state default
+  C     netsh interface isatap set state default
+  C     netsh interface 6to4 set state default
+
+tweak net.icmp | alt_route | rec
+  name  ICMP redirects off
+  desc  Ignores ICMP redirect messages, which a rogue device on your network could use to reroute your traffic.
+  R     SV\Tcpip\Parameters | EnableICMPRedirect | d:0 | d:1
+
+tweak net.ipv4 | swap_horiz | reboot
+  name  Prefer IPv4
+  desc  Makes Windows use IPv4 before IPv6 when a site has both. IPv6 keeps working. Helps with ISPs whose IPv6 routes are slower.
+  R     SV\Tcpip6\Parameters | DisabledComponents | d:32 | d:0
+
+tweak net.repair | build | action
+  name  Repair network
+  desc  Puts the network services back to their normal start types, turns connection checks back on, renews the IP address and flushes the DNS, ARP and NetBIOS caches.
+  SVCS  3 | LanmanWorkstation WdiServiceHost NcbService Netman netprofm WwanSvc WinHttpAutoProxySvc vwifibus vwififlt vwifimp
+  SVCS  2 | Dhcp DPS lmhosts NlaSvc nsi RmSvc Wcmsvc Winmgmt WlanSvc BFE Dnscache
+  R     PW\NetworkConnectivityStatusIndicator | NoActiveProbe | d:0 | -
+  R     SV\NlaSvc\Parameters\Internet | EnableActiveProbing | d:1 | -
+  R-    M\WcmSvc\wifinetworkmanager\config | AutoConnectAllowedOEM
+  R-    PW\WcmSvc\GroupPolicy | fMinimizeConnections
+  START Dhcp Dnscache NlaSvc WlanSvc
+  DEVON WAN Miniport *|NDIS Virtual Network Adapter Enumerator|Microsoft Wi-Fi Direct Virtual Adapter|Microsoft RRAS Root Enumerator|Microsoft Kernel Debug Network Adapter|Microsoft Radio Device Enumeration Bus
+  C     ipconfig /release
+  C     ipconfig /renew
+  C     arp -d *
+  C     nbtstat -R
+  C     nbtstat -RR
+  C     ipconfig /flushdns
+  C     ipconfig /registerdns
+
+tweak net.reset | restart_alt | action risk2
+  name  Reset network stack
+  desc  Resets Winsock, TCP/IP and the TCP settings to Windows defaults and removes per-adapter Nagle tweaks. Use it when the internet stops working after tweaking. Needs a restart; custom DNS and static IP settings are kept.
+  C     netsh winsock reset
+  C     netsh int ip reset
+  C     netsh int tcp reset
+  C     ipconfig /flushdns
+  R-    SV\Tcpip\Parameters\Interfaces\* | TcpAckFrequency
+  R-    SV\Tcpip\Parameters\Interfaces\* | TCPNoDelay
+  R     SV\NetBT\Parameters | EnableLMHOSTS | d:1 | -
+
+sub qos | Traffic priority
+
+tweak net.qos | data_usage | rec
+  name  Reserved QoS bandwidth off
+  desc  Sets the bandwidth Windows can reserve for QoS traffic to 0%, leaving all of it to your apps.
+  R     PW\Psched | NonBestEffortLimit | d:0 | -
+
+tweak net.gameqos | sports_esports | rec
+  name  Game traffic priority
+  desc  Marks packets from popular online games with DSCP 46 (expedited forwarding), so routers that honour QoS send them first. Covers CS2, Valorant, Fortnite, Apex, CoD, Overwatch 2, Rocket League, League, Dota 2, PUBG, Rust, Siege, Tarkov, GTA V, Roblox, Minecraft, The Finals and Battlefield 2042.
+  R     SV\Tcpip\QoS | Do not use NLA | s:1 | -
+  QOS   CS2 | cs2.exe
+  QOS   Valorant | VALORANT-Win64-Shipping.exe
+  QOS   Fortnite | FortniteClient-Win64-Shipping.exe
+  QOS   Apex | r5apex.exe
+  QOS   ApexDX12 | r5apex_dx12.exe
+  QOS   COD | cod.exe
+  QOS   Overwatch2 | Overwatch.exe
+  QOS   RocketLeague | RocketLeague.exe
+  QOS   LoL | League of Legends.exe
+  QOS   Dota2 | dota2.exe
+  QOS   PUBG | TslGame.exe
+  QOS   Rust | RustClient.exe
+  QOS   Siege | RainbowSix.exe
+  QOS   Tarkov | EscapeFromTarkov.exe
+  QOS   GTA5 | GTA5.exe
+  QOS   Roblox | RobloxPlayerBeta.exe
+  QOS   Minecraft | javaw.exe
+  QOS   TheFinals | Discovery.exe
+  QOS   Battlefield | BF2042.exe
+
+tweak net.dop2p | share_off | rec
+  name  Update sharing (Delivery Optimization) off
+  desc  Downloads Windows and Store updates only from Microsoft, without uploading them to or downloading them from other PCs.
+  R     PW\DeliveryOptimization | DODownloadMode | d:0 | -
+
+tweak net.dolimits | swap_vert | rec
+  name  Delivery Optimization limits
+  desc  Caps update downloads at 10% of bandwidth in the background and 70% in the foreground, uploads to other PCs at 50% and 500 GB a month.
+  R     CV\DeliveryOptimization\Settings | DOPercentageMaxBackgroundBandwidth | d:10 | -
+  R     CV\DeliveryOptimization\Settings | DOPercentageMaxForegroundBandwidth | d:70 | -
+  R     CV\DeliveryOptimization\Settings | DOPercentageMaxUploadBandwidth | d:50 | -
+  R     CV\DeliveryOptimization\Settings | DOMonthlyUploadDataCap | d:500 | -
+
+tweak net.bits | cloud_sync | rec
+  name  BITS bandwidth limit
+  desc  Caps background transfers (Windows Update, Store) at 10 KB/s between 8:00 and 17:00 so they never fight your games during the day.
+  R     PW\BITS | EnableBITSMaxBandwidth | d:1 | -
+  R     PW\BITS | MaxBandwidthValidFrom | d:8 | -
+  R     PW\BITS | MaxBandwidthValidTo | d:17 | -
+  R     PW\BITS | MaxTransferRateOnSchedule | d:10 | -
+
+sub dns | Name resolution
+
+tweak net.dns | dns | rec
+  name  DNS client tuning
+  desc  Remembers failed lookups for only 5 seconds, sends queries to all adapters in a fixed order instead of smart reordering, and answers repeated queries without coalescing them.
+  R     PM\Windows NT\DNSClient | MaxNegativeCacheTtl | d:5 | -
+  R     PM\Windows NT\DNSClient | DisableSmartProtocolReordering | d:1 | -
+  R     SV\Dnscache\Parameters | DisableCoalescing | d:1 | -
+
+tweak net.llmnr | travel_explore | rec
+  name  LLMNR off
+  desc  Turns off Link-Local Multicast Name Resolution. It is rarely needed at home and is a common way to steal password hashes on shared networks.
+  R     PM\Windows NT\DNSClient | EnableMulticast | d:0 | -
+  R     SV\Dnscache\Parameters | EnableMulticast | d:0 | -
+
+tweak net.netbios | lan | rec
+  name  NetBIOS over TCP/IP off
+  desc  Turns off the old NetBIOS name service and LMHOSTS lookup on every adapter. Modern file sharing does not need it and it chats on the network constantly.
+  R     SV\NetBT\Parameters\Interfaces\* | NetbiosOptions | d:2 | d:0
+  R     SV\NetBT\Parameters | EnableLMHOSTS | d:0 | d:1
+  R     SV\Dnscache\Parameters | EnableNetbios | d:0 | -
+
+tweak net.wpad | vpn_lock | rec
+  name  Proxy auto-discovery off
+  desc  Turns off WPAD, which looks for a proxy script on every network. Saves a lookup on connect and closes a known spoofing trick.
+  R     CV\Internet Settings\WinHttp | DisableWpad | d:1 | -
+  R     UCV\Internet Settings\Wpad | WpadOverride | d:1 | -
+
+tweak net.flushdns | cleaning_services | action
+  name  Flush DNS cache
+  desc  Clears cached DNS answers. Useful after changing DNS servers or when a site moved.
+  C     ipconfig /flushdns
+
+sub nic | Adapter
+
+tweak net.nicpower | energy_savings_leaf | rec desktop
+  name  Adapter power saving off
+  desc  Turns off Energy Efficient Ethernet, Green Ethernet, selective suspend, wake-on-LAN and the other power features on wired adapters, and stops Windows from powering adapters down.
+  R     CC\Class\{4d36e972-e325-11ce-bfc1-08002be10318}\* | PnPCapabilities | d:24 | - | ?nic
+  NICZ  *EEE EEELinkAdvertisement EeePhyEnable AdvancedEEE EnableGreenEthernet *SelectiveSuspend SelectiveSuspend *DeviceSleepOnDisconnect *NicAutoPowerSaver
+  NICZ  *ModernStandbyWoLMagicPacket *WakeOnMagicPacket *WakeOnPattern *WakeOnLink *WakeFromPowerOff WakeFromS5 WakeOnLink WakeOnPort WakeOnFastStartup S5ARPOffload S4WakeOnLan S5WakeOnLan EnableWakeOnManagementOnTCO EnablePME
+  NICZ  PowerDownPll GigaLite EnableGigaLite ULPMode EnableModernStandby SavePowerNowEnabled EnableSavePowerNow EnableDisconnectedStandby EnableAspm ASPM AutoPowerSaveModeEnabled EnablePowerManagement PowerSaveEnable PowerSaveMode
+  NICZ  *EnableDynamicPowerGating DynamicPowerGating EnableD3ColdInS0 EnablePHYFlexibleSpeed EnableD0PHYFlexibleSpeed EnablePHYWakeUp AutoLinkDownPcieMacOff AutoDisableGigabit ReduceSpeedOnPowerDown PowerSavingMode
+  NICZ  WakeOnSlot WakeUpModeCap *PMNSOffload *PMARPOffload *PMWiFiRekeyOffload ForceWakeFromMagicPacketOnModernStandby S0MgcPkt AllowAllSpeedsLPLU
+  NICS  2 | WolShutdownLinkSpeed
+  R     SV\NDIS\Parameters | EnableNicAutoPowerSaverInSleepStudy | d:0 | -
+  R     PW\WcmSvc\Local | fDisablePowerManagement | d:1 | -
+  R     PW\WcmSvc\GroupPolicy | fDisablePowerManagement | d:1 | -
+
+tweak net.niclatency | speed | rec desktop
+  name  Adapter latency settings
+  desc  Turns off interrupt moderation, flow control, large send and receive coalescing on wired adapters, keeps checksum offload on and sets sane buffer sizes. Fast 2.5G+ adapters keep interrupt moderation.
+  NICZ  *FlowControl *PriorityVLANTag DMACoalescing EnableLLI ApCompatMode *HeaderDataSplit EnableTss EnableCoalesce AdaptiveIFS ITR EnableETW *RscIPv4 *RscIPv6 *LsoV1IPv4 *LsoV2IPv4 *LsoV2IPv6
+  NICZ  *InterruptModeration ?slow
+  NICZ  OBFFEnabled LatencyToleranceReporting LTROBFF
+  NICS  1 | *UdpRsc *UsoIPv4 *UsoIPv6 DropHighlyFragmentedPacket
+  NICS  3 | *IPChecksumOffloadIPv4 *TCPChecksumOffloadIPv4 *TCPChecksumOffloadIPv6 *UDPChecksumOffloadIPv4 *UDPChecksumOffloadIPv6
+  NICS  1514 | *JumboPacket
+  NICS  2048 | *ReceiveBuffers
+  NICS  1024 | *TransmitBuffers
+
+tweak net.bindings | hub | rec
+  name  Discovery protocols off
+  desc  Turns off LLDP and the link-layer topology mapper and responder on all network profiles. Network Map in Control Panel stops working.
+  R     SV\Tcpip\Parameters | EnableLLTDIO | d:0 | -
+  R     SV\Tcpip\Parameters | EnableRspndr | d:0 | -
+  R     PW\LLTD | EnableLLTDIO | d:0 | -
+  R     PW\LLTD | EnableRspndr | d:0 | -
+  R     PW\LLTD | AllowLLTDIOOnDomain | d:0 | -
+  R     PW\LLTD | AllowLLTDIOOnPublicNet | d:0 | -
+  R     PW\LLTD | ProhibitLLTDIOOnPrivateNet | d:1 | -
+  R     PW\LLTD | AllowRspndrOnDomain | d:0 | -
+  R     PW\LLTD | AllowRspndrOnPublicNet | d:0 | -
+  R     PW\LLTD | ProhibitRspndrOnPrivateNet | d:1 | -
+  BIND  off | ms_lldp ms_lltdio ms_rspndr
+
+tweak net.wifi | wifi_off | rec
+  name  Wi-Fi auto-connect off
+  desc  Stops Windows from joining open hotspots suggested by Wi-Fi Sense or the PC maker, and drops Wi-Fi when a cable is plugged in.
+  R     M\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots | value | d:0 | -
+  R     M\WcmSvc\wifinetworkmanager\config | AutoConnectAllowedOEM | d:0 | -
+  R     PM\WcmSvc\GroupPolicy | fMinimizeConnections | d:1 | -
+  R     M\WcmSvc\wifinetworkmanager\features | WiFiSenseOpen | d:0 | -
+  R     M\WcmSvc\wifinetworkmanager\features | PaidWifi | d:0 | -
+  R     M\WcmSvc\wifinetworkmanager\features | AllowWiFiHotSpotReporting | d:0 | -
+
+tweak net.newnetwork | wifi_find | rec
+  name  New network prompt off
+  desc  Stops Windows from asking whether a newly joined network is public or private.
+  K+    CC\Network\NewNetworkWindowOff
+  off:
+  K-    CC\Network\NewNetworkWindowOff
+
+tweak net.bluetooth | bluetooth_disabled | risk2
+  name  Bluetooth radio off
+  desc  Turns the Bluetooth radio off through policy, for PCs without Bluetooth devices. Also see the Bluetooth services.
+  R     M\PolicyManager\default\Connectivity\AllowBluetooth | value | d:0 | d:2
+  SVCS  4 | bthserv:3 BthAvctpSvc:3 BTAGService:3 BluetoothUserService:3 BluetoothUserService_* BthA2dp:3 BthEnum:3 BthHFEnum:3 BthLEEnum:3 BTHPORT:3 BTHUSB:3 BthMini:3 BTHMODEM:3 HidBth:3 Microsoft_Bluetooth_AvrcpTransport:3 RFCOMM:3 BthPan:3 bttflt btha4dp ibtsiva
+
+tweak net.wifisvc | wifi_off | risk2
+  name  Wi-Fi service off
+  desc  Turns off the Wi-Fi service and Wi-Fi Direct, for desktops that only use a cable. Wi-Fi stops working completely.
+  SVCS  4 | WlanSvc:2 vwififlt:1 vwifibus vwifimp WFDSConMgrSvc:3 WwanSvc:3
+
+tweak net.vpn | vpn_key_off
+  name  VPN & proxy services off
+  desc  Turns off the built-in VPN (SSTP, IPsec), remote access and automatic proxy services. Third-party VPN apps such as WireGuard bring their own and keep working.
+  SVCS  4 | WinHttpAutoProxySvc:3 RasMan:3 SstpSvc:3 PolicyAgent:3
+
+sub smb | File sharing
+
+tweak net.smb | folder_shared | rec
+  name  File sharing tuning
+  desc  Removes SMB bandwidth throttling, keeps opportunistic locks on, raises the client command limit and keeps idle connections open for 60 seconds.
+  R     SV\LanmanWorkstation\Parameters | DisableBandwidthThrottling | d:1 | -
+  R     SV\LanmanWorkstation\Parameters | DisableStrictNameChecking | d:1 | -
+  R     SV\LanmanWorkstation\Parameters | KeepConn | d:60 | -
+  R     SV\LanmanWorkstation\Parameters | MaxCmds | d:50 | -
+  R     SV\LanmanWorkstation\Parameters | EnableOplocks | d:1 | -
+  R     SV\LanmanServer\Parameters | Size | d:3 | -
+  R     SV\LanmanServer\Parameters | SizReqBuf | d:16384 | -
+  R     SV\LanmanServer\Parameters | EnableOplocks | d:1 | -
+
+tweak net.adminshares | folder_off | rec reboot
+  name  Admin shares off
+  desc  Stops Windows from creating the hidden C$, D$ and ADMIN$ shares at startup. Remote admin tools that rely on them stop working.
+  R     SV\LanmanServer\Parameters | AutoShareWks | d:0 | -

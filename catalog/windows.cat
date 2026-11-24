@@ -1,0 +1,750 @@
+tab win | Windows | window
+
+sub boot | Boot & logon
+
+tweak win.logon | login | rec
+  name  Faster sign-in
+  desc  Shows the desktop without waiting for the sign-in animation timeout and stops logon and startup scripts from blocking the shell.
+  R     CV\Policies\System | DelayedDesktopSwitchTimeout | d:0 | -
+  R     CV\Policies\System | RunLogonScriptSync | d:0 | -
+  R     NT\Winlogon | RunLogonScriptSync | d:0 | -
+  R     NT\Winlogon | RunStartupScriptSync | d:0 | -
+  R     CV\Policies\System | EnableFirstLogonAnimation | d:0 | -
+  R     UCV\Explorer\Serialize | StartupDelayInMSec | d:0 | -
+
+tweak win.oobe | person_add | rec
+  name  Setup screens for new accounts off
+  desc  Skips the online account, EULA, Wi-Fi, OEM registration, privacy and Cortana voice screens when a new user is set up, defaults the privacy choices to off and allows setup without internet.
+  OOBE  HideOnlineAccountScreens=1 HideEULAPage=1 HideWirelessSetupInOOBE=1 ProtectYourPC=3 DisablePrivacyExperience=1 HideOEMRegistrationScreen=1 EnableCortanaVoice=0 DisableVoice=1
+  R     CV\OOBE | BypassNRO | d:1 | -
+
+tweak win.faststart | restart_alt | rec
+  name  Fast startup off
+  desc  Turns off hybrid shutdown, so every shutdown is a clean one. Fixes drivers and updates that only apply after a real restart.
+  R     CC\Session Manager\Power | HiberbootEnabled | d:0 | d:1
+  R     PW\System | HiberbootEnabled | d:0 | -
+
+tweak win.autochk | fact_check | risk2
+  name  Boot disk check off
+  desc  Removes the countdown before a scheduled disk check and skips the automatic check of drive C at boot. You can still run chkdsk yourself.
+  R     CC\Session Manager | AutoChkTimeOut | d:0 | -
+  R     CC\Session Manager | BootExecute | m:autocheck autochk /k:C * | m:autocheck autochk *
+
+tweak win.bootmenu | menu_open | rec
+  name  Classic boot menu
+  desc  Uses the text boot menu, so F8 opens Safe Mode and the other startup options again.
+  BCD   /set bootmenupolicy Legacy
+  off:
+  BCD   /set bootmenupolicy Standard
+
+tweak win.verbose | subject | rec
+  name  Detailed status messages
+  desc  Shows what Windows is doing during start, sign-in and shutdown instead of "Please wait".
+  R     CV\Policies\System | VerboseStatus | d:1 | -
+
+tweak win.lkg | history | rec
+  name  Last Known Good boot option
+  desc  Lets Windows fall back to the last configuration that booted, when a driver or setting breaks startup.
+  BCD   /set lastknowngood yes
+  off:
+  BCD-  /deletevalue lastknowngood
+
+tweak win.utc | schedule
+  name  Hardware clock in UTC
+  desc  Treats the motherboard clock as UTC, like Linux does. Only switch this on if you dual-boot, or the clock will be off by your time zone.
+  R     CC\TimeZoneInformation | RealTimeIsUniversal | d:1 | -
+
+sub explorer | Explorer
+
+tweak win.previews | preview | rec
+  name  Faster hover previews
+  desc  Shows taskbar thumbnails and desktop peek after 250 ms instead of the default delay.
+  R     CV\Explorer\Advanced | DesktopLivePreviewHoverTime | d:250 | -
+  R     CV\Explorer\Advanced | ThumbnailLivePreviewHoverTime | d:250 | -
+
+tweak win.newapps | new_releases | rec
+  name  New app highlights off
+  desc  Stops Start from highlighting and notifying you about newly installed apps.
+  R     CV\Explorer\Advanced | Start_NotifyNewApps | d:0 | -
+
+tweak win.netthumbs | image_not_supported | rec
+  name  Thumbs.db on network folders off
+  desc  Stops Explorer from writing hidden thumbnail cache files into shared network folders.
+  R     PW\Explorer | DisableThumbsDBOnNetworkFolders | d:1 | -
+
+tweak win.cloudrecent | cloud_off | rec
+  name  Cloud files in Recent off
+  desc  Hides recent files from your Microsoft 365 and OneDrive cloud account in Explorer's Home and Start.
+  R     PW\Explorer | DisableGraphRecentItems | d:1 | -
+
+tweak win.shellfast | speed | rec
+  name  Shell latency
+  desc  Shuts idle COM servers down after 1 second, copies files with buffered I/O, turns off catalog and Win32k verbose counters, stops watching network folders for remote changes and skips push-notification setup at startup.
+  R     CV\CapabilityAccessManager | ComServerShutdownDelayMs | d:1000 | -
+  R     PW\System | CopyFileBufferedSynchronousIo | d:1 | -
+  R     M\Cryptography\CatalogDB | EnablePerformanceCounters | d:0 | -
+  R     NT\Windows\Win32kWPP\Parameters | VerboseOn | d:0 | -
+  R     CV\Policies\Explorer | NoRemoteChangeNotify | d:1 | -
+  R     CV\Policies\Explorer | NoRemoteRecursiveEvents | d:1 | -
+  R     CV\PushNotifications | InitializePlatformOnStartup | d:0 | -
+  R     CV\Audio | AudioHealthMonitorLimit | d:0 | -
+
+tweak win.explorerfast | bolt | rec
+  name  Explorer speed
+  desc  Runs folder windows in their own process, stops Explorer from crawling the network for printers and shares, from guessing each folder's type and from scanning disks for low space, and resolves shortcuts without slow network lookups.
+  R     UCV\Explorer\Advanced | SeparateProcess | d:1 | -
+  R     UCV\Explorer\Advanced | NoNetCrawling | d:1 | -
+  R     HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell | FolderType | s:NotSpecified | -
+  R     UCV\Explorer | MultipleInvokePromptMinimum | s:100 | -
+  R     UCV\Policies\Explorer | LinkResolveIgnoreLinkInfo | d:1 | -
+  R     UCV\Policies\Explorer | NoLowDiskSpaceChecks | d:1 | -
+  R     UPW\Explorer | DisableThumbsDBOnNetworkFolders | d:1 | -
+  R     HKCU\Control Panel\Desktop | LowLevelHooksTimeout | s:1000 | -
+
+tweak win.storeopen | storefront | rec
+  name  "Look for an app in the Store" off
+  desc  Opening an unknown file type no longer offers to search the Store or the web for an app.
+  R     CV\Policies\Explorer | NoInternetOpenWith | d:1 | -
+  R     PW\Explorer | NoUseStoreOpenWith | d:1 | -
+
+tweak win.longpaths | straighten | rec
+  name  Long file paths
+  desc  Lets apps that support it use file paths longer than 260 characters.
+  R     CC\FileSystem | LongPathsEnabled | d:1 | d:0
+
+tweak win.hiddentasks | visibility | rec
+  name  Show hidden scheduled tasks
+  desc  Makes Task Scheduler list the tasks Windows normally hides.
+  R     M\SchedulingAgent | ViewHiddenTasks | d:1 | -
+
+tweak win.psopen | terminal | risk2
+  name  Run .ps1 on double-click
+  desc  Makes PowerShell scripts run when you open them and adds "Run as administrator" to their menu. Convenient, but a downloaded script runs as soon as you open it.
+  R     HKCR\Microsoft.PowerShellScript.1\Shell\Open\Command |  | x:"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" "%1" | x:"%SystemRoot%\System32\notepad.exe" "%1"
+  R     HKCR\Microsoft.PowerShellScript.1\Shell\RunAs | HasLUAShield | s: | -
+  R     HKCR\Microsoft.PowerShellScript.1\Shell\RunAs\Command |  | x:"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" "%1" | -
+
+sub power | Power & shutdown
+
+tweak win.shutdown | power_off | rec
+  name  Faster shutdown
+  desc  Gives hung apps and services 5 seconds to close at shutdown instead of waiting much longer.
+  R     HKU\.DEFAULT\Control Panel\Desktop | WaitToKillTimeout | s:5000 | -
+  R     HKU\.DEFAULT\Control Panel\Desktop | CriticalAppShutdownTimeout | d:5000 | -
+  R     HKU\.DEFAULT\Control Panel\Desktop | CriticalAppShutdownCleanupTimeout | d:5000 | -
+  R     HKCU\Control Panel\Desktop | WaitToKillAppTimeout | s:2000 | -
+  R     SYS\Control | WaitToKillServiceTimeout | s:2000 | s:5000
+  R     CC\Session Manager | TaskhostTimeout | d:2000 | -
+  R     HKCU\Control Panel\Desktop | HungAppTimeout | s:2000 | -
+  R     HKCU\Control Panel\Desktop | AutoEndTasks | s:1 | -
+
+sub input | Keyboard, sound & accessibility
+
+tweak win.stickykeys | accessibility_new | rec
+  name  Accessibility shortcut pop-ups off
+  desc  Stops Sticky Keys, Filter Keys, Toggle Keys, Mouse Keys and High Contrast from popping up when you press Shift five times or hold keys in games, and stops Narrator starting with Win+Enter.
+  R     HKCU\Control Panel\Accessibility\StickyKeys | Flags | s:506 | s:510
+  R     HKCU\Control Panel\Accessibility\Keyboard Response | Flags | s:122 | s:126
+  R     HKCU\Control Panel\Accessibility\ToggleKeys | Flags | s:58 | s:62
+  R     HKCU\Control Panel\Accessibility\MouseKeys | Flags | s:130 | s:62
+  R     HKCU\Control Panel\Accessibility\HighContrast | Flags | s:4194 | s:126
+  R     HKCU\Control Panel\Accessibility | Sound on Activation | d:0 | -
+  R     HKCU\Control Panel\Accessibility | Warning Sounds | s:0 | -
+  R     HKCU\Control Panel\Accessibility\SlateLaunch | LaunchAT | s:0 | -
+  R     UM\Ease of Access | selfscan | s:0 | -
+  R     UM\Ease of Access | selfvoice | s:0 | -
+  R     UM\Narrator\NoRoam | WinEnterLaunchEnabled | d:0 | -
+
+tweak win.keyboard | keyboard | rec
+  name  Keyboard shortcuts & repeat
+  desc  Uses the shortest key repeat delay, turns off the Alt+Shift and Ctrl+Shift layout switching hotkeys and keeps Print Screen as a plain screenshot key.
+  R     HKCU\Control Panel\Keyboard | KeyboardDelay | d:0 | s:1
+  R     HKCU\Keyboard Layout\Toggle | Hotkey | s:3 | s:1
+  R     HKCU\Keyboard Layout\Toggle | Language Hotkey | s:3 | s:1
+  R     HKCU\Keyboard Layout\Toggle | Layout Hotkey | s:3 | s:2
+  R     HKCU\Control Panel\Keyboard | PrintScreenKeyForSnippingEnabled | d:0 | -
+
+tweak win.sound | volume_down | rec
+  name  Sounds & ducking off
+  desc  Stops Windows from lowering other audio during calls, turns off notification sounds and system beeps, and hides disconnected audio devices in the sound panel.
+  R     UM\Multimedia\Audio | UserDuckingPreference | d:3 | -
+  R     UCV\Notifications\Settings | NOC_GLOBAL_SETTING_ALLOW_NOTIFICATION_SOUND | d:0 | -
+  R     HKCU\Control Panel\Sound | Beep | s:no | s:yes
+  R     HKCU\Control Panel\Mouse | Beep | s:No | -
+  R     UM\Multimedia\Audio\DeviceCpl | ShowDisconnectedDevices | d:0 | -
+  R     UM\Multimedia\Audio\DeviceCpl | ShowHiddenDevices | d:0 | -
+
+tweak win.usbnotify | usb | rec
+  name  USB warnings off
+  desc  Hides the "USB device not recognised" and weak charger notifications, which often show for devices that work fine.
+  R     UM\Shell\USB | NotifyOnUsbErrors | s:0 | -
+  R     UM\Shell\USB | NotifyOnWeakCharger | s:0 | -
+
+tweak win.terminal | terminal | rec
+  name  Terminal as default console
+  desc  Opens Command Prompt and PowerShell in Windows Terminal instead of the old console window.
+  R     HKCU\Console\%%Startup | DelegationConsole | s:{B23D10C0-E52E-411E-9D5B-C09FDF709C7D} | -
+  R     HKCU\Console\%%Startup | DelegationTerminal | s:{B23D10C0-E52E-411E-9D5B-C09FDF709C7D} | -
+
+tweak win.powermenu | power_settings_new | rec
+  name  Power menu options
+  desc  Shows Sleep in the power menu and lets you shut down from the sign-in screen without signing in.
+  R     CV\Explorer\FlyoutMenuSettings | ShowSleepOption | d:1 | -
+  R     CV\Policies\System | ShutdownWithoutLogon | d:1 | -
+
+tweak win.hibernate | mode_standby | desktop
+  name  Hibernation off
+  desc  Turns hibernation off on desktops and deletes hiberfil.sys, which frees space the size of a good part of your RAM. Laptops keep it so a dead battery does not lose your work.
+  R     CC\Power | HibernateEnabled | d:0 | d:1
+  R     CC\Power | AllowHibernate | d:0 | -
+  R     CC\Power | HibernateEnabledDefault | d:0 | -
+  R     CC\Session Manager\Power | HibernateEnabled | d:0 | -
+  R     CV\Explorer\FlyoutMenuSettings | ShowHibernateOption | d:0 | -
+  C     powercfg /hibernate off
+  off:
+  C     powercfg /hibernate on
+
+tweak win.modernsb | bedtime | desktop reboot
+  name  Modern Standby off
+  desc  Switches desktops back to classic S3 sleep instead of Modern Standby, which keeps the network and background tasks running while asleep. Skipped on PCs with a battery.
+  R     CC\Power | PlatformAoAcOverride | d:0 | -
+  R     CC\Power | CsEnabled | d:0 | -
+  R     CC\Power | MSDisabled | d:1 | -
+
+sub crash | Crashes
+
+tweak win.crash | report | rec
+  name  Crash dumps & blue screens
+  desc  Keeps a small memory dump instead of a full one, shows the stop code details and stays on the blue screen instead of restarting, so you can read what failed.
+  R     CC\CrashControl | CrashDumpEnabled | d:3 | d:7
+  R     CC\CrashControl | AutoReboot | d:0 | d:1
+  R     CC\CrashControl | DisplayParameters | d:1 | -
+  R     CC\CrashControl | AlwaysKeepMemoryDump | d:0 | -
+  R     CC\CrashControl | SendAlert | d:0 | -
+  R     CC\CrashControl | LogEvent | d:0 | d:1
+  R     CC\CrashControl\StorageTelemetry | DeviceDumpEnabled | d:0 | -
+  R     CC\CrashControl | DisableEmoticon | d:1 | -
+
+sub security | Security
+
+tweak win.printnight | print_lock | rec
+  name  Point and Print hardening
+  desc  Only administrators can install printer drivers, and Windows always warns before it does. Closes the PrintNightmare hole.
+  R     PM\Windows NT\Printers\PointAndPrint | RestrictDriverInstallationToAdministrators | d:1 | -
+  R     PM\Windows NT\Printers\PointAndPrint | NoWarningNoElevationOnInstall | d:0 | -
+  R     PM\Windows NT\Printers\PointAndPrint | UpdatePromptSettings | d:0 | -
+
+tweak win.dcom | admin_panel_settings | rec
+  name  System hardening
+  desc  Requires packet integrity for remote DCOM activation, blocks unencrypted Basic auth in the WinRM client, stops installers from always running elevated and disables the old AT task command.
+  R     M\Ole\AppCompat | RequireIntegrityActivationAuthenticationLevel | d:1 | -
+  R     NT\Schedule\Configuration | EnableAt | d:0 | -
+  R     PW\WinRM\Client | AllowBasic | d:0 | -
+  R     PW\Installer | AlwaysInstallElevated | d:0 | -
+  R     CC\Lsa | RestrictAnonymous | d:1 | d:0
+  R     SV\LanmanServer\Parameters | RestrictNullSessAccess | d:1 | -
+
+tweak win.dma | cable | risk2 reboot
+  name  Kernel DMA protection
+  desc  Blocks external Thunderbolt and USB4 devices that do not support DMA remapping until you sign in. Safer against DMA attacks, but some docks stop working.
+  R     PW\Kernel DMA Protection | DeviceEnumerationPolicy | d:0 | -
+
+tweak win.filehistory | history | rec
+  name  File History off
+  desc  Turns off File History backups. Leave it on if you back up to an external drive with it.
+  R     PW\FileHistory | Disabled | d:1 | -
+
+tweak win.firewall | security | rec
+  name  Firewall profiles
+  desc  Keeps the firewall on for every network type, blocks unsolicited inbound connections, allows outbound, stops unicast replies to multicast and hides the "app was blocked" pop-ups.
+  FWP   StandardProfile PublicProfile PrivateProfile
+  R     PM\WindowsFirewall\%P | EnableFirewall | d:1 | -
+  R     PM\WindowsFirewall\%P | DefaultInboundAction | d:2 | -
+  R     PM\WindowsFirewall\%P | DefaultOutboundAction | d:0 | -
+  R     PM\WindowsFirewall\%P | DisableFirewallNotifications | d:1 | -
+  R     PM\WindowsFirewall\%P | DisableUnicastResponseToMulticast | d:1 | -
+
+tweak win.defender | shield | risk3 reboot ti
+  name  Microsoft Defender
+  desc  Choose how much of Defender stays. Disable turns off real-time protection, cloud reporting, sample upload, notifications and its loggers through policy. Remove deletes the services, drivers and files. Turn off Tamper Protection in Windows Security first.
+  opt   keep | Keep (tuned)
+  K-    PM\Windows Defender
+  K-    PM\Microsoft Antimalware
+  R     M\Windows Defender\Features | TamperProtection | d:1 | -
+  R     PM\Windows Defender\Scan | AvgCPULoadFactor | d:20 | -
+  R     PM\Windows Defender\Scan | LowCpuPriority | d:1 | -
+  R     PM\Windows Defender\Scan | ScanOnlyIfIdle | d:1 | -
+  R     PM\Windows Defender\Scan | DisableCatchupQuickScan | d:1 | -
+  R     PM\Windows Defender\Scan | DisableCatchupFullScan | d:1 | -
+  SVCS  2 | WinDefend:2 SecurityHealthService:2 wscsvc:2 MsSecCore:2 MsSecWfp:2 MsSecFlt:2 SgrmBroker:2 wtd:2 webthreatdefusersvc:2 webthreatdefsvc:2
+  SVCS  3 | WdNisSvc:3 Sense:3 MDCoreSvc:3 SgrmAgent:3 MDCoreSvc_* webthreatdefusersvc_*
+  R     CV\Run | SecurityHealth | x:%windir%\system32\SecurityHealthSystray.exe | -
+  AREG  Microsoft.SecHealthUI
+  T     enable \Microsoft\Windows\Windows Defender\
+  opt   disable | Disable
+  R     M\Windows Defender\Features | TamperProtection | d:0 | -
+  R     M\RemovalTools\MpGears | HeartbeatTrackingIndex | d:0 | -
+  R     M\RemovalTools\MpGears | SpyNetReportingLocation | m: | -
+  SPV   windowsdefender
+  R     PM\Windows Defender | DisableAntiSpyware | d:1 | -
+  R     PM\Windows Defender | DisableAntiVirus | d:1 | -
+  R     PM\Windows Defender | AllowFastServiceStartup | d:0 | -
+  R     PM\Windows Defender | ServiceKeepAlive | d:0 | -
+  R     PM\Windows Defender\Real-Time Protection | DisableRealtimeMonitoring | d:1 | -
+  R     PM\Windows Defender\Real-Time Protection | DisableBehaviorMonitoring | d:1 | -
+  R     PM\Windows Defender\Real-Time Protection | DisableScanOnRealtimeEnable | d:1 | -
+  R     PM\Windows Defender\Real-Time Protection | DisableIOAVProtection | d:1 | -
+  R     PM\Windows Defender\Real-Time Protection | DisableOnAccessProtection | d:1 | -
+  R     PM\Windows Defender\Real-Time Protection | DisableScriptScanning | d:1 | -
+  R     PM\Windows Defender\Spynet | SpynetReporting | d:0 | -
+  R     PM\Windows Defender\Spynet | SubmitSamplesConsent | d:2 | -
+  R     PM\Windows Defender\Reporting | DisableGenericReports | d:1 | -
+  R     PM\Windows Defender\Signature Updates | DisableScheduledSignatureUpdateOnBattery | d:1 | -
+  R     PM\Windows Defender\SmartScreen | ConfigureAppInstallControlEnabled | d:1 | -
+  R     PM\Windows Defender\SmartScreen | ConfigureAppInstallControl | s:Anywhere | -
+  R     PM\Windows Defender\MpEngine | MpCloudBlockLevel | d:2 | -
+  R     M\Windows Defender\Real-Time Protection | DisableRealtimeMonitoring | d:1 | -
+  R     M\Windows Defender\Features | VerifiedAndReputablePolicyState | d:0 | -
+  R     M\Windows Defender\Spynet | DisableBlockAtFirstSeen | d:1 | -
+  R     M\Windows Defender Security Center\Systray | HideSystray | d:1 | -
+  R     PM\Windows Defender Security Center\Notifications | DisableNotifications | d:1 | -
+  R     PM\Windows Defender Security Center\Virus and threat protection | VirusThreatProtectionsArea | d:0 | -
+  R     CC\WMI\Autologger\DefenderApiLogger | Start | d:0 | d:1
+  R     CC\WMI\Autologger\DefenderAuditLogger | Start | d:0 | d:1
+  FEAT  Windows-Defender-ApplicationGuard
+  T     disable \Microsoft\Windows\Windows Defender\
+  R     M\Windows Defender\Features | TamperProtectionSource | d:0 | -
+  R     M\Windows Defender\Real-Time Protection | DisableBehaviorMonitoring | d:1 | -
+  R     M\Windows Defender\Real-Time Protection | DisableOnAccessProtection | d:1 | -
+  R     M\Windows Defender Security Center\Virus and threat protection | SummaryNotificationDisabled | d:1 | -
+  R     M\Windows Defender Security Center\Virus and threat protection | NoActionNotificationDisabled | d:1 | -
+  R     M\Windows Defender Security Center\Virus and threat protection | FilesBlockedNotificationDisabled | d:1 | -
+  R     PM\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access | EnableControlledFolderAccess | d:0 | -
+  R     PM\Windows Defender\Windows Defender Exploit Guard\Network Protection | EnableNetworkProtection | d:0 | -
+  R     PM\Windows Defender | DisallowExploitProtectionOverride | d:1 | -
+  R     CV\Explorer | AicEnabled | s:Anywhere | -
+  R     M\Security Center | FirewallDisableNotify | d:1 | -
+  R     M\Security Center | AntiVirusDisableNotify | d:1 | -
+  R     M\Security Center | UpdatesDisableNotify | d:1 | -
+  R     M\Security Center\Svc | AntiVirusOverride | d:1 | -
+  R     M\Security Center\Svc | FirewallOverride | d:1 | -
+  R-    CV\Run | SecurityHealth
+  R-    CV\Run | WindowsDefender
+  R     CV\Explorer\StartupApproved\Run | SecurityHealth | b:030000000000000000000000 | -
+  KILL  MsMpEng
+  KILL  MpDefenderCoreService
+  KILL  NisSrv
+  SVCS  4 | WinDefend:2 WdNisSvc:3 SecurityHealthService:2 wscsvc:2 Sense:3 MDCoreSvc:3 MsSecCore:2 MsSecWfp:2 SgrmBroker:2 SgrmAgent:3 wtd:2 webthreatdefusersvc:2 webthreatdefsvc:2 MDCoreSvc_* webthreatdefusersvc_*
+  VERIFY WinDefend 4 | Tamper Protection is still on. Open Windows Security > Virus & threat protection > Manage settings, turn off Tamper Protection and Real-time protection, then apply again.
+  opt   remove | Remove
+  USE   disable
+  R     PM\Windows Defender Security Center\Settings | UILockDown | d:1 | -
+  R     PM\Windows Defender Security Center\Family options | UILockdown | d:1 | -
+  R     PM\Windows Defender Security Center\Device performance and health | UILockdown | d:1 | -
+  R     PM\Windows Defender Security Center\Account protection | UILockdown | d:1 | -
+  R     PM\Windows Defender\Spynet | LocalSettingOverrideSpynetReporting | d:0 | -
+  R     PM\Windows Defender | DisableBlockAtFirstSeen | d:1 | -
+  R     PM\Windows Defender | DisableLocalAdminMerge | d:1 | -
+  R     PM\Windows Defender | DisableRoutinelyTakingAction | d:1 | -
+  WTDS  ServiceEnabled=0 CaptureThreatWindow=0 NotifyMalicious=0 NotifyPasswordReuse=0 NotifyUnsafeApp=0
+  R     CV\WTDS\FeatureFlags | BlockUxDisabled | d:1 | -
+  R     CV\WTDS\FeatureFlags | TelemetryCallsEnabled | d:0 | -
+  R     M\Windows Defender | PassiveMode | d:0 | -
+  R     M\Windows Defender | IsServiceRunning | d:0 | -
+  R     M\Windows Defender | PreviousRunningMode | d:0 | -
+  R     M\Windows Defender | ServiceKeepAlive | d:0 | -
+  R     M\Windows Defender | AllowFastServiceStartup | d:0 | -
+  R     PM\Windows Defender\Features | TamperProtection | d:0 | -
+  SVCS  4 | WdBoot:0 WdFilter:0 WdNisDrv:3 MsSecFlt:0
+  DEFSVC WinDefend WdNisSvc SecurityHealthService wscsvc Sense MDCoreSvc MsSecCore MsSecWfp SgrmBroker SgrmAgent wtd webthreatdefsvc webthreatdefusersvc
+  T     delete \Microsoft\Windows\Windows Defender\
+  T     delete \Microsoft\Windows\ExploitGuard\
+  A!    Microsoft.SecHealthUI
+  A!    *Windows.SecurityCenter*
+  DELDIR %ProgramFiles%\Windows Defender
+  DELDIR %ProgramFiles%\Windows Defender Advanced Threat Protection
+  DELDIR %ProgramFiles(x86)%\Windows Defender
+  DELDIR %ProgramData%\Microsoft\Windows Defender
+  DELDIR %ProgramData%\Microsoft\Windows Defender Advanced Threat Protection
+  DELDIR %ProgramData%\Microsoft\Windows Security Health
+  DELDIR %ProgramData%\Microsoft\Scanner
+  FEAT  Windows-Defender-Default-Definitions
+  VERIFY WinDefend 4 | Tamper Protection blocked the removal. Turn off Tamper Protection and Real-time protection in Windows Security, restart and apply again. Locked files are deleted at the next restart.
+
+tweak win.coinstallers | install_desktop | rec
+  name  Auto-installed device apps off
+  desc  Stops Windows from running device co-installers when you plug something in, so mice, keyboards and headsets no longer pull in their vendor apps (Razer Synapse, Logitech and others) on their own. Drivers still install normally.
+  R     CV\Device Installer | DisableCoInstallers | d:1 | -
+
+tweak win.autorun | usb_off | rec
+  name  AutoRun off
+  desc  Stops Windows from running programs automatically from USB drives, CDs and network shares when you plug them in.
+  R     CV\Policies\Explorer | NoAutorun | d:1 | -
+  R     CV\Policies\Explorer | NoDriveTypeAutoRun | d:255 | -
+  R     HKU\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers | DisableAutoplay | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers | DisableAutoplay | d:1 | d:0
+
+tweak win.bitlocker | encrypted | rec
+  name  Automatic device encryption off
+  desc  Stops Windows from silently encrypting the system drive with BitLocker during setup or after sign-in with a Microsoft account. Does not decrypt drives that are already encrypted.
+  R     CC\BitLocker | PreventDeviceEncryption | d:1 | -
+
+tweak win.pslog | terminal | rec
+  name  PowerShell logging off
+  desc  Turns off PowerShell module and script block logging, which writes every script you run to the event log.
+  R     PW\PowerShell\ModuleLogging | EnableModuleLogging | d:0 | -
+  R     PW\PowerShell\ScriptBlockLogging | EnableScriptBlockLogging | d:0 | -
+
+tweak win.msaoptional | account_circle | rec
+  name  Microsoft account optional
+  desc  Lets Store apps that support it work with a local account instead of asking you to sign in with a Microsoft account.
+  R     CV\Policies\System | MSAOptional | d:1 | -
+
+tweak win.nomsa | no_accounts | risk2
+  name  Block adding Microsoft accounts
+  desc  Stops new Microsoft accounts from being added to Windows. Accounts that already sign in with one keep working.
+  R     CV\Policies\System | NoConnectedUser | d:1 | -
+
+tweak win.pwexpire | password | rec
+  name  Password expiry off
+  desc  Stops local account passwords from expiring every 42 days.
+  C     net accounts /maxpwage:unlimited
+  off:
+  C     net accounts /maxpwage:42
+
+tweak win.errormode | error | rec
+  name  Hard error pop-ups off
+  desc  Logs system hard errors instead of showing blocking pop-up dialogs, so a failing background app cannot freeze your game behind a message box.
+  R     CC\Windows | ErrorMode | d:2 | d:0
+
+tweak win.linked | drive_file_move | rec
+  name  Mapped drives in admin apps
+  desc  Makes network drives you mapped also visible to programs running as administrator.
+  R     CV\Policies\System | EnableLinkedConnections | d:1 | -
+
+sub repair | Repair & maintenance
+
+tweak win.repairsvc | build_circle | action rec
+  name  Repair core services & boot drivers
+  desc  Puts any storage, file system, network and core Windows service that was disabled back to its normal start type, so a too-aggressive tweak can never leave the PC unbootable. Only services that are fully disabled are touched.
+  SVCFIX WdBoot=0 WdFilter=0 WdNisDrv=3 cldflt=3 rdbss=1 bam=1 condrv=2 PEAUTH=2 fvevol=0 storqosflt=0 Wof=0 wcifs=1 mrxsmb=1 mrxsmb20=1 srv2=3 UxSms=2 spaceport=0 vdrvroot=0 storflt=0 acpiex=1 Tcpip6=0
+  SVCFIX atapi=0 amdsata=0 amdsbs=0 amdxata=0 ebdrv=0 arcsas=0 ItSas35i=0 LSI_SAS=0 LSI_SAS2i=0 LSI_SAS3i=0 stornvme=0 storahci=0 nvstor=0 nvraid=0 iaStorV=0 iaStorAVC=3 msisadrv=0 intelide=0 pciide=0 3ware=0 SiSRaid2=0 SiSRaid4=0 vsmraid=0 VSTXRAID=0
+  SVCFIX Schedule=2 EventLog=2 RpcSs=2 RpcEptMapper=2 DcomLaunch=2 Winmgmt=2 Dnscache=2 Dhcp=2 NlaSvc=2 netprofm=3 W32Time=3 VSS=3 msiserver=3 seclogon=3 COMSysApp=3 NetSetupSvc=3 SharedAccess=3 EventSystem=2
+  SVCFIX ?hv hvservice=0 Vid=0 hvcrash=0 hyperkbd=1 hypervideo=1 vmbus=0 vmbusroot=0 storvsp=0 netvsc=0 storvsc=0 vidhotplug=3
+  SVCCOPY WdFilter WdBoot WdNisDrv atapi amdsata amdxata ebdrv arcsas ItSas35i LSI_SAS LSI_SAS2i LSI_SAS3i stornvme storahci nvstor nvraid iaStorV iaStorAVC msisadrv intelide pciide spaceport vdrvroot storflt hvservice
+
+tweak win.safemode | shield | choice
+  name  Next restart
+  desc  Choose how Windows starts after the next restart. Safe Mode loads only basic drivers, useful for removing a broken driver. Remember to switch back to Normal.
+  opt   normal | Normal
+  BCD-  /deletevalue {current} safeboot
+  opt   minimal | Safe Mode
+  BCD   /set {current} safeboot minimal
+  opt   network | Safe Mode with networking
+  BCD   /set {current} safeboot network
+
+tweak win.stability | healing | action
+  name  Repair display, input & network services
+  desc  Sets the display, NVIDIA, font, sensor, pen, touch keyboard, credential vault and network services back to automatic and starts them, resets MPO and GPU scheduling to driver defaults and re-enables virtual network adapters. Use it if something stopped working after tweaking.
+  SVCS  2 | NVDisplay.ContainerLocalSystem NvContainerLocalSystem NvContainerNetworkService DispBrokerDesktopSvc DisplayEnhancementService DsmSvc DevQueryBroker VaultSvc FontCache FontCache3.0.0.0 TimeBrokerSvc CDPSvc QWAVE WbioSrvc
+  SVCS  2 | TextInputManagementService PenService SensorService SensorDataService SensrSvc swprv ShellHWDetection DeviceAssociationService WlanSvc Wcmsvc NcbService RmSvc Dhcp Dnscache NlaSvc netprofm
+  START NVDisplay.ContainerLocalSystem DispBrokerDesktopSvc FontCache TextInputManagementService WlanSvc Dhcp Dnscache NlaSvc
+  R-    M\Windows\Dwm | OverlayTestMode
+  R-    CC\GraphicsDrivers | HwSchMode
+  R-    M\WcmSvc\wifinetworkmanager\config | AutoConnectAllowedOEM
+  R-    PW\WcmSvc\GroupPolicy | fMinimizeConnections
+  DEVON WAN Miniport *|NDIS Virtual Network Adapter Enumerator|Microsoft Wi-Fi Direct Virtual Adapter|Bluetooth Device (Personal Area Network)|Microsoft RRAS Root Enumerator|Microsoft Kernel Debug Network Adapter|Microsoft Radio Device Enumeration Bus
+
+tweak win.timesync | update | action rec
+  name  Sync the clock
+  desc  Points Windows Time at pool.ntp.org and syncs now, for an accurate clock in games, TLS and two-factor codes.
+  C     net start w32time
+  C     w32tm /config /syncfromflags:manual /manualpeerlist:"0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org" /update
+  C     w32tm /resync
+
+tweak win.recovery | healing | action rec
+  name  Turn Windows Recovery back on
+  desc  Re-enables the Windows Recovery Environment, which other tweak tools often leave broken, so Startup Repair and Reset this PC keep working.
+  C     reagentc /enable
+
+tweak win.perfcounters | monitoring | action
+  name  Rebuild performance counters
+  desc  Rebuilds the performance counter database and resyncs WMI, which fixes Task Manager and monitoring apps that show no CPU or disk data.
+  C     lodctr /r
+  C     winmgmt /resyncperf
+
+tweak win.gpupdate | policy | action
+  name  Apply policies now
+  desc  Refreshes Group Policy, so policy tweaks apply without a restart.
+  C     gpupdate /force
+
+tweak win.netngen | code | action
+  name  Precompile .NET now
+  desc  Runs the queued .NET Framework precompilation once, so .NET apps start faster afterwards. Takes a few minutes.
+  C     "%SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\ngen.exe" update
+  C     "%SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\ngen.exe" executeQueuedItems
+  C     "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\ngen.exe" executeQueuedItems
+
+tweak win.efi | hard_drive | action rec
+  name  Hide the EFI partition letter
+  desc  Removes the drive letter some tools give to the hidden EFI boot partition, so it disappears from Explorer.
+  EFIHIDE
+
+tweak win.setupacct | person_remove | action rec
+  name  Remove the setup account
+  desc  Deletes the leftover defaultuser0 account that Windows setup sometimes leaves behind.
+  C     net user defaultuser0 /delete
+
+sub features | Windows features
+
+tweak win.features | extension_off | rec reboot
+  name  Unused enterprise features
+  desc  Removes SMB Direct (RDMA), Remote Differential Compression, Work Folders and the WCF 4.5 services, and turns off the App-V client and smart card plug and play, which home PCs never use.
+  FEAT  SMBDirect MSRDC-Infrastructure WorkFolders-Client WCF-Services45 WCF-TCP-PortSharing45
+  R     M\AppV\Client | Enabled | d:0 | -
+  R     PM\AppV\Client | Enabled | d:0 | -
+  R     PW\ScPnP | EnableScPnP | d:0 | -
+
+tweak win.taskmaint | event_busy | rec
+  name  Maintenance & diagnostic tasks off
+  desc  Disables background tasks that run disk, memory and data-integrity diagnostics, WinSAT, registry idle backups, proactive chkdsk scans, troubleshooters, silent disk cleanup, certificate pre-generation and other upkeep you can run by hand.
+  T     disable \Microsoft\Windows\Autochk\Proxy
+  T     disable \Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver
+  T     disable \Microsoft\Windows\DiskFootprint\Diagnostics
+  T     disable \Microsoft\Windows\DiskFootprint\StorageSense
+  T     disable \Microsoft\Windows\DiskCleanup\SilentCleanup
+  T     disable \Microsoft\Windows\Diagnosis\Scheduled
+  T     disable \Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner
+  T     disable \Microsoft\Windows\Data Integrity Scan\Data Integrity Scan
+  T     disable \Microsoft\Windows\Data Integrity Scan\Data Integrity Scan for Crash Recovery
+  T     disable \Microsoft\Windows\Data Integrity Scan\Data Integrity Check And Scan
+  T     disable \Microsoft\Windows\StateRepository\MaintenanceTasks
+  T     disable \Microsoft\Windows\BrokerInfrastructure\BgTaskRegistrationMaintenanceTask
+  T     disable \Microsoft\Windows\ApplicationData\CleanupTemporaryState
+  T     disable \Microsoft\Windows\ApplicationData\DsSvcCleanup
+  T     disable \Microsoft\Windows\UPnP\UPnPHostConfig
+  T     disable \Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask
+  T     disable \Microsoft\Windows\Registry\RegIdleBackup
+  T     disable \Microsoft\Windows\WDI\ResolutionHost
+  T     disable \Microsoft\Windows\Chkdsk\ProactiveScan
+  T     disable \Microsoft\Windows\HelloFace\FODCleanupTask
+  T     disable \Microsoft\Windows\USB\Usb-Notifications
+  T     disable \Microsoft\Windows\SystemUptime\Resume on Boot
+  T     disable \Microsoft\Windows\FileHistory\File History (maintenance mode)
+  T     disable \Microsoft\Windows\Maintenance\WinSAT
+  T     disable \Microsoft\Windows\MemoryDiagnostic\ProcessMemoryDiagnosticEvents
+  T     disable \Microsoft\Windows\MemoryDiagnostic\RunFullMemoryDiagnostic
+  T     disable \Microsoft\Windows\MemoryDiagnostic\AutomaticOfflineMemoryDiagnostic
+  T     disable \Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem
+  T     disable \Microsoft\Windows\CertificateServicesClient\AikCertEnrollTask
+  T     disable \Microsoft\Windows\CertificateServicesClient\KeyPreGenTask
+  T     disable \Microsoft\Windows\SoftwareProtectionPlatform\SvcRestartTaskLogon
+  T     disable \Microsoft\Windows\SoftwareProtectionPlatform\SvcRestartTaskNetwork
+  T     disable \Microsoft\Windows\Clip\License Validation
+  T     disable \Microsoft\Windows\SysMain\ResPriStaticDbSync
+  T     disable \Microsoft\Windows\SysMain\WsSwapAssessmentTask
+  T     disable \Microsoft\Windows\WinINet\CacheTask
+  T     disable \Microsoft\Windows\Windows Filtering Platform\BfeOnServiceStartTypeChange
+  T     disable \Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh
+  T     disable \Microsoft\Windows\AppxDeploymentClient\UCPD velocity
+
+tweak win.ngen | code | rec
+  name  .NET background compilation off
+  desc  Stops .NET Framework from recompiling assemblies in the background after updates, which can max out the CPU for minutes.
+  T     disable \Microsoft\Windows\.NET Framework\
+
+tweak win.defragtask | storage
+  name  Scheduled drive optimization off
+  desc  Disables the weekly Optimize Drives task. On SSDs this also stops the weekly TRIM pass, so run Optimize Drives by hand now and then if you turn this on.
+  T     disable \Microsoft\Windows\Defrag\ScheduledDefrag
+
+tweak win.servicingtasks | handyman | risk2
+  name  Servicing tasks off
+  desc  Disables the component store cleanup, WinRE verification and Workplace Join device sync tasks. Old update files then pile up until you clean them yourself.
+  T     disable \Microsoft\Windows\Servicing\StartComponentCleanup
+  T     disable \Microsoft\Windows\RecoveryEnvironment\VerifyWinRE
+  T     disable \Microsoft\Windows\Workplace Join\Device-Sync
+  T     disable \Microsoft\Windows\Workplace Join\Recovery-Check
+
+tweak win.maintenance | build | rec
+  name  Automatic Maintenance off
+  desc  Stops the nightly maintenance window that defragments, scans and updates in the background and can wake the PC.
+  R     NT\Schedule\Maintenance | MaintenanceDisabled | d:1 | -
+  R     PW\Task Scheduler\Maintenance | WakeUp | d:0 | -
+
+tweak win.toasts | notifications_off
+  name  App notifications off
+  desc  Turns off all toast and tile notifications from apps, including on the lock screen. Do Not Disturb is gentler if you only want quiet while gaming.
+  R     UCV\PushNotifications | ToastEnabled | d:0 | d:1
+  R     UCV\Notifications\Settings | NOC_GLOBAL_SETTING_TOASTS_ENABLED | d:0 | -
+  R     UCV\Notifications\Settings | NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK | d:0 | -
+  R     UCV\Notifications\Settings | NOC_GLOBAL_SETTING_ALLOW_CRITICAL_TOASTS_ABOVE_LOCK | d:0 | -
+  R     HKCU\Software\Policies\Microsoft\Windows\CurrentVersion\PushNotifications | NoToastApplicationNotification | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\Windows\CurrentVersion\PushNotifications | NoToastApplicationNotificationOnLockScreen | d:1 | -
+  R     HKCU\Software\Policies\Microsoft\Windows\CurrentVersion\PushNotifications | NoTileApplicationNotification | d:1 | -
+
+tweak win.wmp | music_note | reboot
+  name  Remove legacy Windows Media Player
+  desc  Removes the old Windows Media Player and the media playback feature. The new Media Player app is not affected.
+  FEAT  WindowsMediaPlayer MediaPlayback
+
+tweak win.printing | print_disabled | risk2 reboot
+  name  Printing off
+  desc  For PCs that never print: removes print from right-click menus, hides the Printers page, blocks web printing and removes the print, XPS and Print to PDF features. Also see the Print Spooler service.
+  R     PM\Windows NT\Printers | DisableHTTPPrinting | d:1 | -
+  R     PM\Windows NT\Printers | DisableWebPnPDownload | d:1 | -
+  PRINTV image batfile cmdfile docxfile fonfile htmlfile inffile inifile JSEFile otffile pfmfile regfile rtffile ttcfile ttffile txtfile VBEFile VBSFile WSFFile
+  SPV   printers
+  FEAT  Printing-Foundation-Features Printing-Foundation-InternetPrinting-Client Printing-XPSServices-Features Printing-PrintToPDFServices-Features
+  SVCS  4 | Spooler:2 PrintWorkflowUserSvc:3 PrintDeviceConfigurationService:3 PrintScanBrokerService:3 usbprint:3 McpManagementService:3 PrintNotify:3 StiSvc:3
+  T     disable \Microsoft\Windows\Printing\PrinterCleanupTask
+  T     disable \Microsoft\Windows\Printing\PrintJobCleanupTask
+  T     disable \Microsoft\Windows\Printing\EduPrintProv
+
+tweak win.nosearch | search_off | risk3 reboot
+  name  Remove Windows Search
+  desc  Removes the search engine feature and disables SearchHost. Start search, Settings search and Explorer search stop working; Open-Shell or Everything are good replacements.
+  FEAT  SearchEngine-Client-Package
+  SVCS  4 | WSearch:2
+  T     disable \Microsoft\Windows\Shell\IndexerAutomaticMaintenance
+  R     UCV\Search | SearchboxTaskbarMode | d:0 | -
+  KILL  SearchHost
+  FILEOFF %SystemRoot%\SystemApps\MicrosoftWindows.Client.CBS_*\SearchHost.exe
+
+tweak win.legacy | extension_off | rec reboot
+  name  Remove legacy Windows features
+  desc  Removes SMBv1, Telnet, TFTP, Simple TCP/IP services, PowerShell 2.0, MSMQ, IIS, WAS and the WCF activation components. Old NAS boxes that only speak SMBv1 stop working.
+  FEAT  SMB1Protocol SMB1Protocol-Client SMB1Protocol-Server SMB1Protocol-Deprecation TelnetClient TFTP SimpleTCP TIFFIFilter MicrosoftWindowsPowerShellV2 MicrosoftWindowsPowerShellV2Root
+  FEAT  MSMQ-Container MSMQ-DCOMProxy MSMQ-HTTP MSMQ-Multicast MSMQ-Server MSMQ-Triggers WAS-ConfigurationAPI WAS-NetFxEnvironment WAS-ProcessModel WAS-WindowsActivationService
+  FEAT  WCF-HTTP-Activation WCF-HTTP-Activation45 WCF-MSMQ-Activation45 WCF-NonHTTP-Activation WCF-Pipe-Activation45 WCF-TCP-Activation45 Windows-Identity-Foundation IIS-*
+
+tweak win.remoteassist | support_agent | rec
+  name  Remote Assistance off
+  desc  Turns off Remote Assistance invitations and closes its firewall rules. Quick Assist and Remote Desktop are separate.
+  R     CC\Remote Assistance | fAllowToGetHelp | d:0 | d:1
+  R     CC\Remote Assistance | fAllowFullControl | d:0 | -
+  FWGROUP off | Remote Assistance
+
+tweak win.safemodemsi | build | rec
+  name  Installers in Safe Mode
+  desc  Lets the Windows Installer service run in Safe Mode, so you can uninstall a broken driver or app from there.
+  R     CC\SafeBoot\Minimal\MSIServer |  | s:Service | -
+  R     CC\SafeBoot\Network\MSIServer |  | s:Service | -
+
+tweak win.sudo | admin_panel_settings
+  name  Sudo for Windows
+  desc  Turns on the built-in sudo command in inline mode, so an elevated command runs in the same terminal window.
+  R     CV\Sudo | Enabled | d:3 | -
+
+tweak win.wpbt | memory | rec
+  name  Firmware-injected programs off
+  desc  Stops Windows from running programs that the motherboard firmware drops in at boot (WPBT), the trick some vendors use to force-install their utilities.
+  R     CC\Session Manager | DisableWpbtExecution | d:1 | -
+
+sub update | Windows Update
+
+tweak win.wuoff | block | risk3 reboot ti
+  name  Windows Update off
+  desc  Disables the Windows Update, Update Orchestrator, Medic and Update Health services, so nothing updates at all. You get no security fixes until you turn it back on.
+  SVCS  4 | wuauserv:3 UsoSvc:2 WaaSMedicSvc:3 uhssvc:3
+  SVCS  3 | BITS:3 DoSvc:2
+  R     PW\WindowsUpdate\AU | NoAutoUpdate | d:1 | -
+  R     PW\WindowsUpdate | DoNotConnectToWindowsUpdateInternetLocations | d:1 | -
+  T     disable \Microsoft\Windows\UpdateOrchestrator\
+  T     disable \Microsoft\Windows\WindowsUpdate\
+  T     disable \Microsoft\Windows\InstallService\
+  T     disable \Microsoft\Windows\WaaSMedic\
+  T     delete \Microsoft\Windows\UpdateOrchestrator\MusUx*
+  T     delete \Microsoft\Windows\UpdateOrchestrator\UpdateAssistant*
+  T     delete \Microsoft\Windows\UpdateOrchestrator\Reboot*
+  T     delete \Microsoft\Windows\UpdateOrchestrator\USO*
+  T     delete \Microsoft\Windows\UpdateOrchestrator\StartOobe*
+  T     delete \Microsoft\Windows\UpdateOrchestrator\OobeExpedite
+  T     delete \Microsoft\Windows\UpdateOrchestrator\WakeToWork
+  T     delete \Microsoft\Windows\UpdateOrchestrator\Universal Orchestrator*
+
+tweak win.healthtools | delete_forever | action
+  name  Remove Update Health Tools
+  desc  Uninstalls Microsoft Update Health Tools, PC Health Check and the Windows Installation Assistant, which exist only to push feature upgrades.
+  MSIX  Microsoft Update Health Tools|Windows PC Health Check
+  C     msiexec /X{43D501A5-E5E3-46EC-8F33-9E15D2A2CBD5} /qn /norestart
+  C     msiexec /X{804A0628-543B-4984-896C-F58BF6A54832} /qn /norestart
+  C     "%ProgramFiles(x86)%\WindowsInstallationAssistant\Windows10UpgraderApp.exe" /SunValley /ForceUninstall
+  K-    CV\UpdateHealthTools
+  K-    CV\rempl
+  K-    M\CloudManagedUpdate
+  DELDIR %ProgramW6432%\Microsoft Update Health Tools
+  DELDIR %ProgramW6432%\PCHealthCheck
+  DELDIR %ProgramFiles(x86)%\WindowsInstallationAssistant
+
+tweak win.wumanual | system_update_alt | rec
+  name  Manual updates
+  desc  Windows Update asks before downloading, never installs on its own, never restarts while you are signed in and leaves the extra Microsoft products channel alone.
+  R     PW\WindowsUpdate\AU | AUOptions | d:2 | -
+  R     PW\WindowsUpdate\AU | NoAutoRebootWithLoggedOnUsers | d:1 | -
+  R     PW\WindowsUpdate\AU | AutoInstallMinorUpdates | d:0 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\WindowsUpdate\AU | AutoInstallMinorUpdates | d:0 | -
+  R     PW\WindowsUpdate | AllowTemporaryEnterpriseFeatureControl | d:0 | -
+  R     CV\WindowsUpdate\Services\Pending\7971f918-a847-4430-9279-4a52d1efe18d | RegisterWithAU | d:0 | -
+  R     PW\WindowsUpdate | AUPowerManagement | d:0 | -
+  R     PW\WindowsUpdate\AU | NoAUAsDefaultShutdownOption | d:1 | -
+  R     PW\WindowsUpdate | AllowMUUpdateService | d:0 | -
+  R     PW\WindowsUpdate | SetDisablePauseUXAccess | d:0 | -
+  R     PW\WindowsUpdate | DeferFeatureUpdates | d:1 | -
+  R     PW\WindowsUpdate | DeferFeatureUpdatesPeriodInDays | d:30 | -
+
+tweak win.wudrivers | developer_board_off | rec
+  name  Drivers from Windows Update off
+  desc  Stops Windows Update from replacing the GPU, chipset and other drivers you installed with its own older versions.
+  R     PW\WindowsUpdate | ExcludeWUDriversInQualityUpdate | d:1 | -
+  R     M\WindowsUpdate\UX\Settings | ExcludeWUDriversInQualityUpdate | d:1 | -
+  R     CV\DriverSearching | SearchOrderConfig | d:0 | d:1
+  R     CV\DriverSearching | DontSearchWindowsUpdate | d:1 | -
+  R     UPW\DriverSearching | DriverUpdateWizardWuSearchEnabled | d:0 | -
+  R     PW\Device Metadata | PreventDeviceMetadataFromNetwork | d:1 | -
+
+tweak win.wuux | notifications_off | rec
+  name  Update nags off
+  desc  Hides restart-required notifications, the "new version of Windows" upgrade banner, the Media Creation Tool link, and blocks Store-delivered OS upgrades.
+  R     M\WindowsUpdate\UX\Settings | RestartNotificationsAllowed2 | d:0 | -
+  R     M\WindowsUpdate\UX\Settings | HideMCTLink | d:1 | -
+  R     PW\WindowsUpdate | UpdateNotificationLevel | d:2 | -
+  R     PW\WindowsUpdate | HideMCTLink | d:1 | -
+  R     PW\WindowsUpdate | RestartNotificationsAllowed2 | d:0 | -
+  R     M\WindowsUpdate\UX\Settings | TrayIconVisibility | d:0 | -
+  R     HKLM\SYSTEM\Setup\UpgradeNotification | UpgradeAvailable | d:0 | -
+  R     PM\WindowsStore | DisableOSUpgrade | d:1 | -
+
+tweak win.wupause | pause_circle | risk2
+  name  Pause updates
+  desc  Pauses feature and quality updates until 2033 and allows pauses up to 10 years in Settings. You get no security fixes while paused, so resume now and then.
+  R     M\WindowsUpdate\UX\Settings | FlightSettingsMaxPauseDays | d:3650 | -
+  R     M\WindowsUpdate\UX\Settings | PauseFeatureUpdatesStartTime | s:2025-01-01T00:00:00Z | -
+  R     M\WindowsUpdate\UX\Settings | PauseFeatureUpdatesEndTime | s:2033-01-01T00:00:00Z | -
+  R     M\WindowsUpdate\UX\Settings | PauseQualityUpdatesStartTime | s:2025-01-01T00:00:00Z | -
+  R     M\WindowsUpdate\UX\Settings | PauseQualityUpdatesEndTime | s:2033-01-01T00:00:00Z | -
+  R     M\WindowsUpdate\UX\Settings | PauseUpdatesStartTime | s:2025-01-01T00:00:00Z | -
+  R     M\WindowsUpdate\UX\Settings | PauseUpdatesExpiryTime | s:2033-01-01T00:00:00Z | -
+
+tweak win.insider | science | rec
+  name  Insider builds & experiments off
+  desc  Blocks Windows Insider preview builds, configuration flighting and the feature experiments Microsoft runs on normal PCs, and hides the Insider page in Settings.
+  R     M\WindowsSelfHost\UI\Visibility | HideInsiderPage | d:1 | -
+  R     PW\PreviewBuilds | AllowBuildPreview | d:0 | -
+  R     PW\PreviewBuilds | EnableConfigFlighting | d:0 | -
+  R     PW\PreviewBuilds | EnableExperimentation | d:0 | -
+  R     PW\WindowsUpdate | ManagePreviewBuilds | d:1 | -
+  R     PW\WindowsUpdate | ManagePreviewBuildsPolicyValue | d:0 | -
+
+tweak win.appupdates | update_disabled | rec
+  name  App auto-updates off
+  desc  Stops the Microsoft Store and Windows Media Player from updating apps on their own. You can still update from the Store's Library page.
+  R     PM\WindowsStore | AutoDownload | d:2 | -
+  R     PM\WindowsStore | DisableStoreAppsAutoUpdate | d:1 | -
+  R     CV\WindowsStore\WindowsUpdate | AutoDownload | d:2 | -
+  R     PM\WindowsMediaPlayer | DisableAutoUpdate | d:1 | -
+
+tweak win.arso | key_off | rec
+  name  Auto sign-in after updates off
+  desc  Stops Windows from using your saved sign-in to finish setting up the account after an update restart.
+  R     CV\Policies\System | DisableAutomaticRestartSignOn | d:1 | -

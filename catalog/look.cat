@@ -1,0 +1,467 @@
+tab look | Look | palette
+
+sub taskbar | Taskbar
+
+tweak look.widgets | widgets | rec
+  name  Widgets & news off
+  desc  Turns off the Widgets board, news and interests and the Windows feeds through policy, so the taskbar button and its background feed go away.
+  R     M\PolicyManager\default\NewsAndInterests\AllowNewsAndInterests | AllowNewsAndInterests | d:0 | -
+  R     M\PolicyManager\default\NewsAndInterests\AllowNewsAndInterests | value | d:0 | -
+  R     PM\Dsh | AllowNewsAndInterests | d:0 | -
+  R     PW\Windows Feeds | EnableFeeds | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | TaskbarDa | d:0 | d:1
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Feeds | ShellFeedsTaskbarViewMode | d:2 | -
+
+tweak look.taskview | view_carousel | rec
+  name  Task View button off
+  desc  Removes the Task View button from the taskbar. Win+Tab still opens it.
+  R     PW\Explorer | HideTaskViewButton | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | ShowTaskViewButton | d:0 | d:1
+
+tweak look.chaticon | chat_bubble | rec
+  name  Chat & Meet Now icons off
+  desc  Removes the Teams Chat and Meet Now icons from the taskbar.
+  R     PW\Windows Chat | ChatIcon | d:3 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | TaskbarMn | d:0 | d:1
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer | HideSCAMeetNow | d:1 | -
+
+tweak look.searchbox | search | rec
+  name  Taskbar search
+  desc  Choose how search shows on the taskbar.
+  opt   icon | Icon only
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Search | SearchboxTaskbarMode | d:1 | -
+  opt   hidden | Hidden
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Search | SearchboxTaskbarMode | d:0 | -
+  opt   box | Search box
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Search | SearchboxTaskbarMode | d:2 | -
+
+tweak look.auxpins | keep_off | rec
+  name  Automatic taskbar pins off
+  desc  Stops Windows from pinning Outlook, Copilot, LinkedIn, Dev Home, Clipchamp, Phone Link, To Do, Teams and other apps to the taskbar by itself.
+  AUXP  TaskViewPin OutlookWebPin WidgetsPin ChatPin MailPin OutlookPin CopilotPin CopilotPWAPin LinkedInPin DevHomePin NotepadPin PhotosPin GetStartedPin SettingsPin SnippingToolPin BingPin ClipchampPin PhonePin PhoneLinkPin TodoPin TeamsPin
+
+tweak look.endtask | cancel | rec
+  name  End task on the taskbar
+  desc  Adds "End task" to the right-click menu of taskbar apps, so you can kill a frozen app without Task Manager.
+  R     UCV\Explorer\Advanced\TaskbarDeveloperSettings | TaskbarEndTask | d:1 | -
+
+tweak look.clock | schedule | rec
+  name  Seconds & battery percentage
+  desc  Shows seconds in the taskbar clock and the battery percentage next to the battery icon.
+  R     UCV\Explorer\Advanced | ShowSecondsInSystemClock | d:1 | -
+  R     UCV\Explorer\Advanced | IsBatteryPercentageEnabled | d:1 | -
+
+tweak look.tray | more_horiz | rec
+  name  Show all tray icons
+  desc  Always shows every notification area icon instead of hiding them behind the arrow.
+  R     UPW\Explorer | NoAutoTrayNotify | d:1 | -
+
+tweak look.badges | circle_notifications | rec
+  name  Taskbar badges & flashing off
+  desc  Turns off unread-count badges on taskbar apps and stops taskbar buttons from flashing for attention.
+  R     UCV\Notifications\Settings | NOC_GLOBAL_SETTING_BADGE_ENABLED | d:0 | -
+  R     UCV\Explorer\Advanced | TaskbarFlashOverrideBreatheCount | d:0 | -
+
+tweak look.peek | preview_off | rec
+  name  Aero Peek off
+  desc  Turns off peeking at the desktop from the corner of the taskbar and the live window previews it shows.
+  R     UCV\Explorer\Advanced | DisablePreviewDesktop | d:1 | -
+  R     UCV\Explorer\Advanced | DisablePreviewWindow | d:1 | -
+  R     UM\Windows\DWM | EnableAeroPeek | d:0 | -
+  R     UM\Windows\DWM | AlwaysHibernateThumbnails | d:0 | -
+
+tweak look.notifcenter | notifications_off | risk2
+  name  Notification center off
+  desc  Removes the notification center and calendar flyout from the taskbar clock. Notifications that pop up still show.
+  R     UPW\Explorer | DisableNotificationCenter | d:1 | -
+
+tweak look.combine | view_week
+  name  Combine taskbar buttons
+  desc  Choose when windows of the same app are grouped into one taskbar button with labels hidden.
+  opt   always | Always
+  R     UCV\Explorer\Advanced | TaskbarGlomLevel | d:0 | -
+  opt   full | When the taskbar is full
+  R     UCV\Explorer\Advanced | TaskbarGlomLevel | d:1 | -
+  opt   never | Never
+  R     UCV\Explorer\Advanced | TaskbarGlomLevel | d:2 | -
+  REFRESH
+
+tweak look.taskbarleft | format_align_left
+  name  Taskbar on the left
+  desc  Aligns taskbar icons to the left like Windows 10 instead of the centre.
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | TaskbarAl | d:0 | d:1
+
+tweak look.taskbarsmall | density_small
+  name  Small taskbar buttons
+  desc  Uses smaller taskbar buttons so more apps fit.
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | TaskbarSi | d:0 | d:1
+
+sub theme | Theme
+
+tweak look.dark | dark_mode
+  name  Dark mode
+  desc  Switches Windows and apps to the dark theme.
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize | AppsUseLightTheme | d:0 | d:1
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize | SystemUsesLightTheme | d:0 | d:1
+
+tweak look.transparency | blur_off
+  name  Transparency effects off
+  desc  Turns off the see-through blur in the taskbar, Start and windows.
+  R     UCV\Themes\Personalize | EnableTransparency | d:0 | d:1
+
+tweak look.visualfx | auto_awesome | rec
+  name  Visual effects for performance
+  desc  Uses the "custom" performance preset: no window minimize and menu animations, no smooth scrolling, instant menus, but keeps ClearType fonts and window contents while dragging.
+  R     UCV\Explorer\VisualEffects | VisualFXSetting | d:3 | d:0
+  R     HKCU\Control Panel\Desktop | UserPreferencesMask | b:9012038010000000 | b:9e1e078012000000
+  R     HKCU\Control Panel\Desktop | FontSmoothing | s:2 | s:2
+  R     HKCU\Control Panel\Desktop | DragFullWindows | s:1 | s:1
+  R     HKCU\Control Panel\Desktop | MenuShowDelay | s:1 | s:400
+  R     HKCU\Control Panel\Desktop | SmoothScroll | d:0 | -
+  R     HKCU\Control Panel\Desktop\WindowMetrics | MinAnimate | s:0 | s:1
+  R     HKCU\Control Panel\Personalization\Desktop Slideshow | AnimationDuration | d:0 | -
+  R     UCV\Explorer\Advanced | ListviewAlphaSelect | d:1 | -
+  R     UCV\Explorer\Advanced | ListviewShadow | d:0 | -
+  R     HKCU\Control Panel\Cursors | GestureVisualization | s:0 | -
+  R     HKCU\Control Panel\Cursors | ContactVisualization | s:0 | -
+  R     HKCU\Control Panel\Cursors | PenVisualization | d:0 | -
+
+tweak look.accentbars | border_color
+  name  Accent colour on title bars
+  desc  Shows your accent colour on window title bars and borders, and on Start and the taskbar.
+  R     UM\Windows\DWM | ColorPrevalence | d:1 | d:0
+  R     UCV\Themes\Personalize | ColorPrevalence | d:1 | d:0
+
+tweak look.autocolor | format_color_reset | rec
+  name  Accent from wallpaper
+  desc  Stops Windows from picking a new accent colour every time the wallpaper changes, and keeps your cursor and desktop icons when you switch themes.
+  R     HKCU\Control Panel\Desktop | AutoColorization | d:0 | -
+  R     UCV\Themes | ThemeChangesMousePointers | s:0 | -
+  R     UCV\Themes | ThemeChangesDesktopIcons | s:0 | -
+
+tweak look.jpeg | high_quality | rec
+  name  Full-quality wallpaper
+  desc  Stops Windows from recompressing your wallpaper to 85% JPEG quality.
+  R     HKCU\Control Panel\Desktop | JPEGImportQuality | d:100 | -
+
+tweak look.screensaver | desktop_access_disabled | rec
+  name  Screen saver off
+  desc  Turns the screen saver off. The display still turns off on its power timer.
+  R     HKCU\Control Panel\Desktop | ScreenSaveActive | s:0 | s:1
+  R     HKCU\Control Panel\Desktop | ScreenSaveTimeOut | s:0 | s:900
+
+tweak look.lighting | light_off | rec
+  name  Dynamic Lighting off
+  desc  Stops Windows from controlling the RGB lighting of your keyboard, mouse and other devices, so vendor software keeps control.
+  R     HKCU\Software\Microsoft\Lighting | AmbientLightingEnabled | d:0 | d:1
+
+sub windows | Windows & Alt+Tab
+
+tweak look.alttab | tab
+  name  Alt+Tab
+  desc  Choose what Alt+Tab shows.
+  opt   windows | Open windows only
+  R     UCV\Explorer\Advanced | MultiTaskingAltTabFilter | d:3 | -
+  R-    UCV\Explorer | AltTabSettings
+  opt   classic | Classic icons
+  R     UCV\Explorer | AltTabSettings | d:1 | -
+  opt   default | Windows default
+  R-    UCV\Explorer\Advanced | MultiTaskingAltTabFilter
+  R-    UCV\Explorer | AltTabSettings
+
+tweak look.snap | dashboard
+  name  Snap layouts flyout off
+  desc  Stops the snap layout grid from popping up when you hover over a window's maximize button. Win+Z still opens it.
+  R     UCV\Explorer\Advanced | EnableSnapAssistFlyout | d:0 | d:1
+
+tweak look.shake | back_hand | rec
+  name  Shake to minimize off
+  desc  Stops other windows from minimizing when you shake a window's title bar.
+  R     UCV\Explorer\Advanced | DisallowShaking | d:1 | -
+
+sub start | Start menu
+
+tweak look.startpins | push_pin | rec
+  name  Clean Start pins
+  desc  Replaces the default Start pins (Store ads, Office, Xbox and others) with just Settings, File Explorer and Terminal. You can pin more afterwards.
+  R     M\PolicyManager\current\device\Start | ConfigureStartPins | s:{"pinnedList":[{"packagedAppId":"windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"},{"desktopAppLink":"%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\File Explorer.lnk"},{"packagedAppId":"Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"}]} | -
+  R     M\PolicyManager\providers\B5292708-1619-419B-9923-E5D9F3925E71\default\Device\Start | ConfigureStartPins | s:{"pinnedList":[{"packagedAppId":"windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"},{"desktopAppLink":"%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\File Explorer.lnk"},{"packagedAppId":"Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"}]} | -
+  R     M\PolicyManager\current\device\Start | ConfigureStartPins_WinningProvider | s:B5292708-1619-419B-9923-E5D9F3925E71 | -
+  R     M\PolicyManager\current\device\Start | ConfigureStartPins_ProviderSet | d:1 | -
+
+tweak look.startrec | recommend | rec
+  name  Start recommendations off
+  desc  Hides the Recommended section, most used apps, recently added apps, recent files and recommended websites in Start.
+  R     M\PolicyManager\current\device\Start | HideRecommendedSection | d:1 | -
+  R     PW\Explorer | HideRecommendedSection | d:1 | -
+  R     PW\Explorer | ShowOrHideMostUsedApps | d:2 | -
+  R     PW\Explorer | HideRecentlyAddedApps | d:1 | -
+  R     PW\Explorer | HideRecommendedPersonalizedSites | d:1 | -
+  R     CV\Policies\Explorer | NoStartMenuMFUprogramsList | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer | ShowRecommendations | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | Start_IrisRecommendations | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | Start_ShowFrequentList | d:0 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | Start_ShowRecentList | d:0 | -
+
+tweak look.startlayout | apps | rec
+  name  Start layout
+  desc  Shows more pins and fewer recommendations, and opens All apps as a list.
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | Start_Layout | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced | Start_AllAppsView | d:1 | -
+  R     HKCU\Software\Microsoft\Windows\CurrentVersion\Start | StartLayoutMode | d:1 | -
+
+tweak look.startfolders | folder_special | rec
+  name  Hide Start folder shortcuts
+  desc  Keeps only the Settings shortcut next to the power button in Start and hides Documents, Downloads, Explorer, Music, Pictures, Videos, Network and the personal folder.
+  STARTF Documents=0 Downloads=0 FileExplorer=0 Music=0 Pictures=0 Videos=0 HomeGroup=0 Network=0 PersonalFolder=0 Settings=1
+
+sub explorer | File Explorer
+
+tweak look.thispc | folder_off | rec
+  name  Hide This PC folders
+  desc  Hides the Desktop, Documents, Downloads, Music, Pictures, Videos and 3D Objects shortcuts from This PC, leaving only your drives.
+  FOLD  {31C0DD25-9439-4F12-BF41-7FF4EDA38722} {a0c69a99-21c8-4671-8703-7934162fcf1d} {7d83ee9b-2244-4e70-b1f5-5393042af1e4} {0ddd015d-b06c-45d5-8c4c-f59713854639} {35286a68-3c57-41a1-bbb1-0eae73d76c95} {f42ee2d3-909f-4907-8871-4c22fc0bf756} {B4BFCC3A-DB2C-424C-B029-7FE99A87C641}
+  R     CV\Explorer\FolderDescriptions\%F\PropertyBag | ThisPCPolicy | s:Hide | s:Show
+  R     HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\%F\PropertyBag | ThisPCPolicy | s:Hide | s:Show
+  K-    CV\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}
+  K-    HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}
+
+tweak look.gallery | photo_library | rec
+  name  Navigation pane cleanup
+  desc  Removes Gallery, Home, Network and the duplicate removable-drive entries from the File Explorer navigation pane.
+  R     CV\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c} | HiddenByDefault | d:1 | -
+  R     HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c} | HiddenByDefault | d:1 | -
+  K-    CV\Explorer\Desktop\NameSpace_41040327\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}
+  K-    CV\Explorer\Desktop\NameSpace_36354489\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}
+  K-    CV\Explorer\MyComputer\DelegateFolders\{F5FB2C77-0E3F-4A6B-9DB6-BEB9DDACE390}
+  K-    HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\DelegateFolders\{F5FB2C77-0E3F-4A6B-9DB6-BEB9DDACE390}
+  R     HKLM\SOFTWARE\Classes\CLSID\{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}\ShellFolder | Attributes | d:2962489444 | d:2953052260 | ti
+  R     HKCU\Software\Classes\CLSID\{f874310e-b6b7-47dc-bc84-b9e6b38f5903} | System.IsPinnedToNameSpaceTree | d:0 | -
+
+tweak look.extensions | description | rec
+  name  File extensions & full path
+  desc  Shows file extensions like .exe and .pdf, shows the full path in the title bar and hides the hover tooltips on files.
+  R     UCV\Explorer\Advanced | HideFileExt | d:0 | d:1
+  R     UCV\Explorer\CabinetState | FullPath | d:1 | -
+  R     UCV\Explorer\Advanced | ShowInfoTip | d:0 | -
+
+tweak look.explorerstyle | folder_open | rec
+  name  Explorer layout
+  desc  Opens File Explorer on This PC, uses compact spacing, hides item checkboxes and shows the detailed copy dialog.
+  R     UCV\Explorer | LaunchTo | d:1 | -
+  R     UCV\Explorer\Advanced | UseCompactMode | d:1 | -
+  R     UCV\Explorer\Advanced | AutoCheckSelect | d:0 | -
+  R     UCV\Explorer\OperationStatusManager | EnthusiastMode | d:1 | -
+
+tweak look.shortcut | shortcut | rec
+  name  No "- Shortcut" suffix
+  desc  New shortcuts are named after the file only, without " - Shortcut".
+  R     UCV\Explorer\NamingTemplates | ShortcutNameTemplate | s:"%s.lnk" | -
+  R     UCV\Explorer | link | b:00000000 | -
+
+tweak look.hidden | visibility
+  name  Show hidden & system files
+  desc  Shows hidden files and protected operating system files in File Explorer.
+  R     UCV\Explorer\Advanced | Hidden | d:1 | d:2
+  R     UCV\Explorer\Advanced | ShowSuperHidden | d:1 | d:0
+
+tweak look.thispcdesk | computer
+  name  This PC on desktop
+  desc  Shows the This PC icon on the desktop.
+  R     UCV\Explorer\HideDesktopIcons\NewStartPanel | {20D04FE0-3AEA-1069-A2D8-08002B30309D} | d:0 | d:1
+
+tweak look.recyclebin | delete | rec
+  name  Recycle Bin on desktop
+  desc  Makes sure the Recycle Bin icon shows on the desktop.
+  R     UCV\Explorer\HideDesktopIcons\NewStartPanel | {645FF040-5081-101B-9F08-00AA002F954E} | d:0 | -
+
+tweak look.iconcache | photo_size_select_large | rec
+  name  Bigger icon cache
+  desc  Lets Explorer keep up to 4096 icons in its cache, so folders with many file types do not redraw icons.
+  R     CV\Explorer | Max Cached Icons | s:4096 | -
+
+sub menus | Menus
+
+tweak look.classicmenu | menu | rec logoff
+  name  Classic context menu
+  desc  Brings back the full Windows 10 right-click menu, without the "Show more options" step.
+  R     HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 |  | s: | -
+  off:
+  K-    HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}
+
+tweak look.takeown | key | rec
+  name  Take Ownership menu item
+  desc  Adds "Take Ownership" to the right-click menu of files, DLLs and folders (system folders excluded), so you can get access to locked files in one click.
+  R     HKCR\*\shell\runas |  | s:Take Ownership | -
+  R     HKCR\*\shell\runas | HasLUAShield | s: | -
+  R     HKCR\*\shell\runas | Position | s:middle | -
+  R     HKCR\*\shell\runas\command |  | s:cmd.exe /c takeown /f "%1" && icacls "%1" /grant *S-1-3-4:F /c /l | -
+  R     HKCR\*\shell\runas\command | IsolatedCommand | s:cmd.exe /c takeown /f "%1" && icacls "%1" /grant *S-1-3-4:F /c /l | -
+  R     HKCR\Directory\shell\runas |  | s:Take Ownership | -
+  R     HKCR\Directory\shell\runas | AppliesTo | s:NOT (System.ItemPathDisplay:="C:\Users" OR System.ItemPathDisplay:="C:\ProgramData" OR System.ItemPathDisplay:="C:\Windows" OR System.ItemPathDisplay:="C:\Windows\System32" OR System.ItemPathDisplay:="C:\Program Files" OR System.ItemPathDisplay:="C:\Program Files (x86)") | -
+  R     HKCR\Directory\shell\runas | HasLUAShield | s: | -
+  R     HKCR\Directory\shell\runas | Position | s:middle | -
+  R     HKCR\Directory\shell\runas\command |  | s:cmd.exe /c takeown /f "%1" /r /d y && icacls "%1" /grant *S-1-3-4:F /t /c /l /q | -
+  R     HKCR\Directory\shell\runas\command | IsolatedCommand | s:cmd.exe /c takeown /f "%1" /r /d y && icacls "%1" /grant *S-1-3-4:F /t /c /l /q | -
+  R     HKCR\dllfile\shell\runas |  | s:Take Ownership | -
+  R     HKCR\dllfile\shell\runas | HasLUAShield | s: | -
+  R     HKCR\dllfile\shell\runas | NoWorkingDirectory | s: | -
+  R     HKCR\dllfile\shell\runas | Position | s:middle | -
+  R     HKCR\dllfile\shell\runas\command |  | s:cmd.exe /c takeown /f "%1" && icacls "%1" /grant *S-1-3-4:F /c /l | -
+  R     HKCR\dllfile\shell\runas\command | IsolatedCommand | s:cmd.exe /c takeown /f "%1" && icacls "%1" /grant *S-1-3-4:F /c /l | -
+  off:
+  K-    HKCR\*\shell\runas
+  K-    HKCR\Directory\shell\runas
+  K-    HKCR\dllfile\shell\runas
+
+tweak look.ctxclean | playlist_remove | rec
+  name  Context menu cleanup
+  desc  Removes Share, Troubleshoot compatibility, Cast to device, Include in library and Sync Center from the right-click menu.
+  K-    HKCR\*\shellex\ContextMenuHandlers\ModernSharing
+  K-    HKCR\AllFilesystemObjects\shellex\ContextMenuHandlers\ModernSharing
+  BLOCK {1d27f844-3a1f-4410-85ac-14651078412d} | Troubleshoot compatibility
+  BLOCK {7AD84985-87B4-4a16-BE58-8B72A5B390F7} | Cast to Device
+  BLOCK {596AB062-B4D2-4215-9F74-E9109B0A8153} | Include in library
+  BLOCK {e2bf9676-5f8f-435c-97eb-11607a5bedf7} | Sync Center
+
+tweak look.newmenu | note_add | rec
+  name  New file menu entries
+  desc  Adds Batch file, PowerShell script and Registry file to the right-click New menu.
+  R     HKCR\.bat\ShellNew | ItemName | x:%windir%\System32\acppage.dll,-6002 | -
+  R     HKCR\.bat\ShellNew | NullFile | s: | -
+  R     HKCR\.ps1 |  | s:Microsoft.PowerShellScript.1 | -
+  R     HKCR\.ps1\ShellNew | NullFile | s: | -
+  R     HKCR\Microsoft.PowerShellScript.1 |  | s:Windows PowerShell Script | -
+  R     HKCR\Microsoft.PowerShellScript.1 | FriendlyTypeName | s:Windows PowerShell Script | -
+  R     HKCR\.reg\ShellNew | NullFile | s: | -
+  R     HKCR\.reg\ShellNew | ItemName | x:%windir%\regedit.exe,-309 | -
+  off:
+  K-    HKCR\.bat\ShellNew
+  K-    HKCR\.ps1\ShellNew
+  K-    HKCR\.reg\ShellNew
+
+tweak look.powfiles | bolt | rec
+  name  Import .pow power plans
+  desc  Lets you double-click a .pow power plan file to import it.
+  R     HKCR\.pow | FriendlyTypeName | s:Power Plan | -
+  R     HKCR\.pow\DefaultIcon |  | x:%SystemRoot%\System32\powercfg.cpl,-202 | -
+  R     HKCR\.pow\shell\Import\command |  | s:powercfg /import "%1" | -
+  off:
+  K-    HKCR\.pow
+
+sub lock | Lock & sign-in
+
+tweak look.startsound | volume_off | rec
+  name  Startup sound off
+  desc  Turns off the Windows startup sound.
+  R     CV\Policies\System | DisableStartupSound | d:1 | -
+
+tweak look.logonbg | image | rec
+  name  Plain sign-in background
+  desc  Shows a solid colour behind the sign-in box instead of the blurred lock screen picture.
+  R     PW\System | DisableLogonBackgroundImage | d:1 | -
+
+sub motion | Motion
+
+tweak look.xamlanim | animation | risk2
+  name  XAML app animations off
+  desc  Turns off the slide and fade animations in Settings, Start and other XAML apps. On some Windows 11 builds this leaves flyouts and Start half-drawn, so only use it if it works well on your PC.
+  R     M\XAML | DisableGlobalAnimations | d:1 | -
+
+tweak look.shellanim | motion_photos_off
+  name  Shell animations & shadows off
+  desc  Turns off system parameter animations, window drop shadows from DWM and smooth mouse-wheel scrolling animation.
+  R     CV\Policies\Explorer | TurnOffSPIAnimations | d:1 | -
+  R     M\Windows\Dwm | DisableProjectedShadows | d:1 | -
+  R     M\Windows\Dwm | MousewheelAnimationDurationMs | d:0 | -
+
+sub viewer | Photo viewer
+
+tweak look.photoviewer | image | rec
+  name  Windows Photo Viewer
+  desc  Brings back the fast classic Windows Photo Viewer and makes it the default for JPG, PNG, GIF, BMP, TIFF, ICO and the other common image types. Useful after removing the Photos app.
+  R     HKCR\Applications\photoviewer.dll\shell\open | MuiVerb | s:@photoviewer.dll,-3043 | -
+  R     HKCR\Applications\photoviewer.dll\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\Applications\photoviewer.dll\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\PhotoViewer.FileAssoc.Bitmap | ImageOptionFlags | d:1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Bitmap | FriendlyTypeName | x:@%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll,-3056 | -
+  R     HKCR\PhotoViewer.FileAssoc.Bitmap\DefaultIcon |  | s:%SystemRoot%\System32\imageres.dll,-70 | -
+  R     HKCR\PhotoViewer.FileAssoc.Bitmap\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Bitmap\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\Applications\photoviewer.dll\shell\print | NeverDefault | s: | -
+  R     HKCR\Applications\photoviewer.dll\shell\print\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\Applications\photoviewer.dll\shell\print\DropTarget | Clsid | s:{60fd46de-f830-4894-a628-6fa81bc0190d} | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF | EditFlags | d:65536 | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF | ImageOptionFlags | d:1 | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF | FriendlyTypeName | x:@%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll,-3055 | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF\DefaultIcon |  | s:%SystemRoot%\System32\imageres.dll,-72 | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF\shell\open | MuiVerb | x:@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043 | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\PhotoViewer.FileAssoc.JFIF\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg | EditFlags | d:65536 | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg | ImageOptionFlags | d:1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg | FriendlyTypeName | x:@%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll,-3055 | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg\DefaultIcon |  | s:%SystemRoot%\System32\imageres.dll,-72 | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg\shell\open | MuiVerb | x:@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043 | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Jpeg\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\PhotoViewer.FileAssoc.Gif | ImageOptionFlags | d:1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Gif | FriendlyTypeName | x:@%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll,-3057 | -
+  R     HKCR\PhotoViewer.FileAssoc.Gif\DefaultIcon |  | s:%SystemRoot%\System32\imageres.dll,-83 | -
+  R     HKCR\PhotoViewer.FileAssoc.Gif\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Gif\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\PhotoViewer.FileAssoc.Png | ImageOptionFlags | d:1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Png | FriendlyTypeName | x:@%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll,-3057 | -
+  R     HKCR\PhotoViewer.FileAssoc.Png\DefaultIcon |  | s:%SystemRoot%\System32\imageres.dll,-71 | -
+  R     HKCR\PhotoViewer.FileAssoc.Png\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Png\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\PhotoViewer.FileAssoc.Wdp | EditFlags | d:65536 | -
+  R     HKCR\PhotoViewer.FileAssoc.Wdp | ImageOptionFlags | d:1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Wdp\DefaultIcon |  | s:%SystemRoot%\System32\wmphoto.dll,-400 | -
+  R     HKCR\PhotoViewer.FileAssoc.Wdp\shell\open | MuiVerb | x:@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043 | -
+  R     HKCR\PhotoViewer.FileAssoc.Wdp\shell\open\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\PhotoViewer.FileAssoc.Wdp\shell\open\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     HKCR\SystemFileAssociations\image\shell\Image Preview\command |  | x:%SystemRoot%\System32\rundll32.exe "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", ImageView_Fullscreen %1 | -
+  R     HKCR\SystemFileAssociations\image\shell\Image Preview\DropTarget | Clsid | s:{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A} | -
+  R     M\Windows Photo Viewer\Capabilities | ApplicationDescription | s:@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3069 | -
+  R     M\Windows Photo Viewer\Capabilities | ApplicationName | s:@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3009 | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .cr2 | s:PhotoViewer.FileAssoc.Tiff | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .jpg | s:PhotoViewer.FileAssoc.Jpeg | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .wdp | s:PhotoViewer.FileAssoc.Wdp | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .jfif | s:PhotoViewer.FileAssoc.JFIF | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .dib | s:PhotoViewer.FileAssoc.Bitmap | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .png | s:PhotoViewer.FileAssoc.Png | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .jxr | s:PhotoViewer.FileAssoc.Wdp | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .bmp | s:PhotoViewer.FileAssoc.Bitmap | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .jpe | s:PhotoViewer.FileAssoc.Jpeg | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .jpeg | s:PhotoViewer.FileAssoc.Jpeg | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .gif | s:PhotoViewer.FileAssoc.Gif | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .tif | s:PhotoViewer.FileAssoc.Tiff | -
+  R     M\Windows Photo Viewer\Capabilities\FileAssociations | .tiff | s:PhotoViewer.FileAssoc.Tiff | -
+  R     HKCU\Software\Classes\.jpg |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.jpg\UserChoice
+  R     HKCU\Software\Classes\.jpeg |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.jpeg\UserChoice
+  R     HKCU\Software\Classes\.gif |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.gif\UserChoice
+  R     HKCU\Software\Classes\.png |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.png\UserChoice
+  R     HKCU\Software\Classes\.bmp |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.bmp\UserChoice
+  R     HKCU\Software\Classes\.tiff |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.tiff\UserChoice
+  R     HKCU\Software\Classes\.ico |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.ico\UserChoice
+  R     HKCU\Software\Classes\.tif |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.tif\UserChoice
+  R     HKCU\Software\Classes\.wdp |  | s:PhotoViewer.FileAssoc.Wdp | -
+  K-    UCV\Explorer\FileExts\.wdp\UserChoice
+  R     HKCU\Software\Classes\.jfif |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.jfif\UserChoice
+  R     HKCU\Software\Classes\.dib |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.dib\UserChoice
+  R     HKCU\Software\Classes\.jpe |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.jpe\UserChoice
+  R     HKCU\Software\Classes\.jxr |  | s:PhotoViewer.FileAssoc.Tiff | -
+  K-    UCV\Explorer\FileExts\.jxr\UserChoice
+  REFRESH

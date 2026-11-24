@@ -1,0 +1,207 @@
+tab game | Gaming | sports_esports
+
+sub sched | Game scheduling
+
+tweak game.mmcss | sports_esports | rec
+  name  Game & audio priority
+  desc  Tunes the multimedia scheduler: reserves only 10% CPU for background work, turns off its lazy mode and gives the Games and Audio tasks high CPU, GPU and disk priority.
+  R     NT\Multimedia\SystemProfile | SystemResponsiveness | d:10 | d:20
+  R     NT\Multimedia\SystemProfile | SchedulerTimerResolution | d:10000 | -
+  R     NT\Multimedia\SystemProfile | NoLazyMode | d:1 | -
+  R     NT\Multimedia\SystemProfile | LazyModeTimeout | d:4294967295 | -
+  R     NT\Multimedia\SystemProfile | SchedulerPeriod | d:1000000 | -
+  R     NT\Multimedia\SystemProfile | IdleDetectionCycles | d:1 | -
+  R     NT\Multimedia\SystemProfile\Tasks\Games | Affinity | d:0 | d:0
+  R     NT\Multimedia\SystemProfile\Tasks\Games | Background Only | s:False | s:False
+  R     NT\Multimedia\SystemProfile\Tasks\Games | Clock Rate | d:10000 | d:10000
+  R     NT\Multimedia\SystemProfile\Tasks\Games | GPU Priority | d:8 | d:8
+  R     NT\Multimedia\SystemProfile\Tasks\Games | Priority | d:6 | d:2
+  R     NT\Multimedia\SystemProfile\Tasks\Games | Scheduling Category | s:High | s:Medium
+  R     NT\Multimedia\SystemProfile\Tasks\Games | SFIO Priority | s:High | s:Normal
+  R     NT\Multimedia\SystemProfile\Tasks\Audio | Affinity | d:0 | d:0
+  R     NT\Multimedia\SystemProfile\Tasks\Audio | Clock Rate | d:10000 | d:10000
+  R     NT\Multimedia\SystemProfile\Tasks\Audio | GPU Priority | d:8 | d:8
+  R     NT\Multimedia\SystemProfile\Tasks\Audio | Priority | d:6 | d:6
+  R     NT\Multimedia\SystemProfile\Tasks\Audio | Scheduling Category | s:High | s:Medium
+
+tweak game.anticheat | verified_user | rec
+  name  Anti-cheat compatibility
+  desc  Gives Vanguard (Valorant) and osu! the exploit-protection settings they expect, so they keep working when system-wide exploit protection is off.
+  R     NT\Image File Execution Options\vgc.exe | MitigationOptions | b:000000000001000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\vgc.exe | MitigationAuditOptions | b:000000000000000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\vgc.exe | EAFModules | s: | -
+  R     NT\Image File Execution Options\vgtray.exe | MitigationOptions | b:000000000001000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\valorant.exe | MitigationOptions | b:000000000001000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\VALORANT-Win64-Shipping.exe | MitigationOptions | b:000000000001000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\osu!.exe | MitigationOptions | b:000021000000000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\osu!.exe | MitigationAuditOptions | b:000000000000000000000000000000000000000000000000 | -
+  R     NT\Image File Execution Options\osu!.exe | EAFModules | s: | -
+
+tweak game.mode | sports_esports | rec
+  name  Game Mode
+  desc  Keeps Game Mode on, so Windows pauses updates and background work and gives the game priority while you play.
+  R     UM\GameBar | AutoGameModeEnabled | d:1 | -
+  R     UM\GameBar | AllowAutoGameMode | d:1 | -
+
+tweak game.fso | fullscreen | rec
+  name  Fullscreen optimizations off
+  desc  Turns off fullscreen optimizations, so games that ask for exclusive fullscreen really get it.
+  R     HKCU\System\GameConfigStore | GameDVR_FSEBehaviorMode | d:2 | -
+  R     HKCU\System\GameConfigStore | GameDVR_FSEBehavior | d:2 | -
+  R     HKCU\System\GameConfigStore | GameDVR_HonorUserFSEBehaviorMode | d:1 | -
+  R     HKCU\System\GameConfigStore | GameDVR_DXGIHonorFSEWindowsCompatible | d:1 | -
+  R     HKCU\System\GameConfigStore | GameDVR_EFSEFeatureFlags | d:0 | -
+  R     HKCU\System\GameConfigStore | GameDVR_DSEBehavior | d:2 | -
+
+tweak game.flip | layers | rec
+  name  Windowed game optimizations
+  desc  Upgrades windowed and borderless DirectX 10/11 games to the flip presentation model, for lower latency and working VRR, and turns off the separate VRR optimization.
+  R     UM\DirectX\UserGpuPreferences | DirectXUserGlobalSettings | s:VRROptimizeEnable=0;SwapEffectUpgradeEnable=1; | -
+
+tweak game.apppref | rocket_launch | rec
+  name  Game GPU & priority
+  desc  Puts the games you have installed (Steam, Epic, Riot, Battle.net, Ubisoft, Roblox, osu! and any Unreal Engine game) on the high-performance GPU with High CPU priority, and Discord, Spotify and game launchers on the power-saving GPU, with launchers at Below normal priority. On laptops this keeps games on the dedicated GPU. Only installed games are touched.
+  GPUPREF 2 | %STEAM%\steamapps\common\Counter-Strike Global Offensive\game\bin\win64\cs2.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\dota 2 beta\game\bin\win64\dota2.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Apex Legends\r5apex*.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Tom Clancy's Rainbow Six Siege\RainbowSix*.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Overwatch\Overwatch.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Grand Theft Auto V\GTA5.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Rust\RustClient.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\PUBG\TslGame\Binaries\Win64\TslGame.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Call of Duty HQ\cod.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\FPSAimTrainer\FPSAimTrainer.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\Aimlabs\AimLab_tb.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\VRChat\VRChat.exe
+  GPUPREF 2 | %STEAM%\steamapps\common\*\*\Binaries\Win64\*-Win64-Shipping.exe
+  GPUPREF 2 | %ProgramFiles%\Epic Games\Fortnite\FortniteGame\Binaries\Win64\FortniteClient-Win64-Shipping.exe
+  GPUPREF 2 | %ProgramFiles%\Epic Games\rocketleague\Binaries\Win64\RocketLeague.exe
+  GPUPREF 2 | %ProgramFiles%\Epic Games\*\*\Binaries\Win64\*-Shipping.exe
+  GPUPREF 2 | %SystemDrive%\Riot Games\VALORANT\live\ShooterGame\Binaries\Win64\VALORANT-Win64-Shipping.exe
+  GPUPREF 2 | %SystemDrive%\Riot Games\League of Legends\Game\League of Legends.exe
+  GPUPREF 2 | %ProgramFiles(x86)%\Call of Duty\_retail_\cod.exe
+  GPUPREF 2 | %ProgramFiles(x86)%\Overwatch\_retail_\Overwatch.exe
+  GPUPREF 2 | %ProgramFiles(x86)%\Ubisoft\Ubisoft Game Launcher\games\Tom Clancy's Rainbow Six Siege\RainbowSix*.exe
+  GPUPREF 2 | %ProgramFiles%\Genshin Impact\Genshin Impact Game\GenshinImpact.exe
+  GPUPREF 2 | %LOCALAPPDATA%\Roblox\Versions\*\RobloxPlayerBeta.exe
+  GPUPREF 2 | %ProgramFiles(x86)%\Roblox\Versions\*\RobloxPlayerBeta.exe
+  GPUPREF 2 | %LOCALAPPDATA%\osu!\osu!.exe
+  GPUPREF 1 | %LOCALAPPDATA%\Discord\app-*\Discord.exe
+  GPUPREF 1 | %APPDATA%\Spotify\Spotify.exe
+  GPUPREF 1 | %ProgramFiles(x86)%\Steam\steam.exe
+  GPUPREF 1 | %ProgramFiles(x86)%\Steam\bin\cef\cef.win*\steamwebhelper.exe
+  GPUPREF 1 | %ProgramFiles(x86)%\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe
+  GPUPREF 1 | %ProgramFiles(x86)%\Battle.net\Battle.net.exe
+  R     NT\Image File Execution Options\cs2.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\dota2.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\r5apex.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\r5apex_dx12.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\RainbowSix.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\RainbowSix_Vulkan.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\Overwatch.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\GTA5.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\RustClient.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\TslGame.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\cod.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\FPSAimTrainer.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\AimLab_tb.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\VRChat.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\FortniteClient-Win64-Shipping.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\RocketLeague.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\VALORANT-Win64-Shipping.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\GenshinImpact.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\RobloxPlayerBeta.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\osu!.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\League of Legends.exe\PerfOptions | CpuPriorityClass | d:3 | -
+  R     NT\Image File Execution Options\steam.exe\PerfOptions | CpuPriorityClass | d:5 | -
+  R     NT\Image File Execution Options\steamwebhelper.exe\PerfOptions | CpuPriorityClass | d:5 | -
+  R     NT\Image File Execution Options\EpicGamesLauncher.exe\PerfOptions | CpuPriorityClass | d:5 | -
+  R     NT\Image File Execution Options\EpicWebHelper.exe\PerfOptions | CpuPriorityClass | d:5 | -
+  R     NT\Image File Execution Options\Battle.net.exe\PerfOptions | CpuPriorityClass | d:5 | -
+
+sub capture | Game Bar & capture
+
+tweak game.dvr | videocam_off | rec
+  name  Game DVR & background recording off
+  desc  Turns off Game DVR background recording, audio, cursor and microphone capture and the Game Bar presence writer that runs while you play.
+  R     PW\GameDVR | AllowGameDVR | d:0 | -
+  R     PW\GameDVR | AudioCaptureEnabled | d:0 | -
+  R     PW\GameDVR | CursorCaptureEnabled | d:0 | -
+  R     PW\GameDVR | MicrophoneCaptureEnabled | d:0 | -
+  R     M\PolicyManager\default\ApplicationManagement\AllowGameDVR | value | d:0 | -
+  R     M\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter | ActivationType | d:0 | d:1
+  R     HKCU\System\GameConfigStore | GameDVR_Enabled | d:0 | d:1
+  R     UCV\GameDVR | AppCaptureEnabled | d:0 | -
+  R     UCV\GameDVR | HistoricalCaptureEnabled | d:0 | -
+  R     UCV\GameDVR | AudioCaptureEnabled | d:0 | -
+  R     UCV\GameDVR | CursorCaptureEnabled | d:0 | -
+  R     UCV\GameDVR | MicrophoneCaptureEnabled | d:0 | -
+  R     UM\GameBar | AppCaptureEnabled | d:0 | -
+  R     UM\GameBar | EnableCaptureSampling | d:0 | -
+  R     UM\GameBar\LiveCapture | ShowWatermark | d:0 | -
+  R     UM\GameBar\LiveCapture | ShowTimer | d:0 | -
+  R     UM\GameBar\LiveCapture | ShowBanner | d:0 | -
+  R     UM\GameBar\Broadcast | AllowBroadcast | d:0 | -
+
+tweak game.gamebar | gamepad | rec
+  name  Game Bar pop-ups off
+  desc  Stops the Game Bar tips and startup panel and stops the controller's Xbox button from opening Game Bar. Win+G still works.
+  R     UM\GameBar | ShowStartupPanel | d:0 | -
+  R     UM\GameBar | GamePanelStartupTipIndex | d:3 | -
+  R     UM\GameBar | GamePanelStartupKeyAlignment | d:0 | -
+  R     UM\GameBar | UseNexusForGameBarEnabled | d:0 | -
+  R     UCV\GameDVR | ShowStartupPanel | d:0 | -
+  R     UCV\GameDVR | UseNexusForGameBarEnabled | d:0 | -
+
+sub input | Input latency
+
+tweak game.mouse | mouse | rec logoff
+  name  Mouse acceleration off
+  desc  Turns off "Enhance pointer precision" and flattens the acceleration curve, so the cursor moves exactly as far as your hand does.
+  R     HKCU\Control Panel\Mouse | MouseSpeed | s:0 | s:1
+  R     HKCU\Control Panel\Mouse | MouseThreshold1 | s:0 | s:6
+  R     HKCU\Control Panel\Mouse | MouseThreshold2 | s:0 | s:10
+  R     HKCU\Control Panel\Mouse | SmoothMouseXCurve | b:0000000000000000C0CC0C0000000000809919000000000040662600000000000033330000000000 | -
+  R     HKCU\Control Panel\Mouse | SmoothMouseYCurve | b:0000000000000000000038000000000000007000000000000000A800000000000000E00000000000 | -
+
+tweak game.mousefeel | ads_click | rec
+  name  Pointer responsiveness
+  desc  Shows hover tips after 100 ms, keeps double-click speed comfortable, and turns off pointer trails and snap-to-default-button.
+  R     HKCU\Control Panel\Mouse | MouseHoverTime | s:100 | s:400
+  R     HKCU\Control Panel\Mouse | DoubleClickSpeed | s:480 | s:500
+  R     HKCU\Control Panel\Mouse | MouseTrails | s:0 | s:0
+  R     HKCU\Control Panel\Mouse | SnapToDefaultButton | s:0 | s:0
+
+tweak game.rawthrottle | mouse | rec
+  name  Background raw input throttle
+  desc  Limits raw mouse input to apps in the background (overlays, launchers) to every 20 ms, so the game in front gets the input first.
+  R     HKCU\Control Panel\Mouse | RawMouseThrottleEnabled | d:1 | -
+  R     HKCU\Control Panel\Mouse | RawMouseThrottleForced | d:1 | -
+  R     HKCU\Control Panel\Mouse | RawMouseThrottleDuration | d:20 | -
+  R     HKCU\Control Panel\Mouse | RawMouseThrottleLeeway | d:0 | -
+
+tweak game.devoff | developer_board_off | rec desktop
+  name  Rarely used system devices off
+  desc  Disables devices that are almost never used but still raise interrupts: the system speaker, COM1, the legacy GS wavetable synth, AMD controller emulation and crash defender, Intel platform monitoring and PCI RAM and data acquisition controllers.
+  DEVOFF System Speaker|Communications Port (COM1)|Microsoft GS Wavetable Synth|AMD Controller Emulation|AMD Crash Defender|Intel(R) Platform Monitoring Technology Device|Legacy device|PCI Data Acquisition and Signal Processing Controller|PCI standard RAM Controller
+
+tweak game.rit | mouse | rec
+  name  Raw input timer coalescing off
+  desc  Stops the raw input thread from batching mouse and keyboard timer work to save power.
+  R     NT\Windows | RITdemonTimerPowerSaveElapse | d:0 | -
+  R     NT\Windows | RITdemonTimerPowerSaveCoalescing | d:0 | -
+
+tweak game.usbpower | usb | rec desktop reboot
+  name  USB & PCI power saving off
+  desc  Keeps USB controllers, hubs and devices awake: no selective suspend, link power management or D3cold. Mice, keyboards and headsets never fall asleep.
+  R     CC\usbflags | DisableHCS0Idle | d:1 | -
+  R     SV\USB | DisableSelectiveSuspend | d:1 | -
+  R     SV\USBHUB3\Parameters | DisableLPM | d:1 | -
+  R     SV\USBHUB3\Parameters | D3ColdSupported | d:0 | -
+  R     SV\USBHUB3\Parameters | DisableSelectiveSuspendUI | d:1 | -
+  R     SV\USBHUB3\Parameters | Ceip | d:0 | -
+  R     SV\usbccgp\Parameters | D3ColdSupported | d:0 | -
+  R     SV\pci\Parameters | D3ColdSupported | d:0 | -
+  R     SV\pci\Parameters | D3ColdSupport | d:0 | -
+  DEVZ  EnhancedPowerManagementEnabled AllowIdleIrpInD3 EnableSelectiveSuspend DeviceSelectiveSuspended SelectiveSuspendEnabled SelectiveSuspendOn D3ColdSupported WdfDirectedPowerTransitionEnable EnableIdlePowerManagement IdleInWorkingState
+  DEVWAKE off
