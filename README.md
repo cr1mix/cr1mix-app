@@ -16,7 +16,7 @@
 
 <br>
 
-cr1mix app is a Windows tweaking utility built from scratch in C++20. It ships as a single 1.3 MB executable with no runtime and no background service.
+cr1mix app is a free and open source Windows tweaking utility built from scratch in C++20. It ships as a single 1.3 MB executable with no runtime and no background service.
 
 Every tweak is written by hand, says what it does in plain words, and can be switched back. Nothing changes until you choose it.
 
@@ -115,5 +115,5 @@ The build writes `build\cr1mix.exe` and `build\cr1mix app setup.exe`.
 <br>
 
 <div align="center">
-<sub>© 2026 cr1mix. All rights reserved.</sub>
+<sub>Open source under the <a href="LICENSE">GPL-3.0 license</a>. © 2026 cr1mix.</sub>
 </div>
